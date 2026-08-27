@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Prontag.Admin/Prontag.Admin.csproj" />
+    <Project Path="src/Prontag.Api/Prontag.Api.csproj" />
+    <Project Path="src/Prontag.Domain/Prontag.Domain.csproj" />
+    <Project Path="src/Prontag.Infrastructure/Prontag.Infrastructure.csproj" />
+    <Project Path="src/Prontag.Tablet/Prontag.Tablet.csproj" />
+  </Folder>
+</Solution>
