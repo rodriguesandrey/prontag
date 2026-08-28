@@ -1,5 +1,6 @@
 @page "/"
 @inject HttpClient Http
+@inject NavigationManager Nav
 @using Prontag.Domain
 
 <h3>Qual produto?</h3>
@@ -28,6 +29,6 @@ else
 
     private void Selecionar(Produto produto)
     {
-        // próximo passo: navegar pra tela de escolher o funcionário
+        Nav.NavigateTo($"/funcionario/{produto.Id}");
     }
 }
