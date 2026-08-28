@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Prontag.Infrastructure;
+using Prontag.Api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +41,9 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
-
+app.MapProdutoEndpoints();
+app.MapFuncionarioEndpoints();
+app.MapImpressaoEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
