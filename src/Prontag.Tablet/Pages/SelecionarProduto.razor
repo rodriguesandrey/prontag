@@ -1,0 +1,33 @@
+@page "/"
+@inject HttpClient Http
+@using Prontag.Domain
+
+<h3>Qual produto?</h3>
+
+@if (produtos is null)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    @foreach (var produto in produtos)
+    {
+        <button @onclick="() => Selecionar(produto)">
+            @produto.Nome
+        </button>
+    }
+}
+
+@code {
+    private List<Produto>? produtos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos");
+    }
+
+    private void Selecionar(Produto produto)
+    {
+        // próximo passo: navegar pra tela de escolher o funcionário
+    }
+}

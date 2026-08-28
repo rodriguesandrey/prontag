@@ -12,8 +12,9 @@ builder.Services.AddDbContext<ProntagDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ITenantProvider, FixedTenantProvider>();
-
+builder.Services.AddCors();
 var app = builder.Build();
+app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
