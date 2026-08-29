@@ -1,11 +1,10 @@
-@page "/produto"
-
-<a href="/">&lt; Voltar</a>
+@page "/expositor"
 @inject HttpClient Http
 @inject NavigationManager Nav
 @using Prontag.Domain
 
-<h3>Qual produto?</h3>
+<a href="/">&lt; Voltar</a>
+<h3>Qual produto? (Expositor)</h3>
 
 @if (produtos is null)
 {
@@ -31,6 +30,6 @@ else
 
     private void Selecionar(Produto produto)
     {
-        Nav.NavigateTo($"/funcionario/{produto.Id}");
+        Nav.NavigateTo($"/confirmar-expositor/{produto.Id}");
     }
 }

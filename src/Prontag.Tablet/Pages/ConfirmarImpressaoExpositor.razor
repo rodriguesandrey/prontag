@@ -1,4 +1,4 @@
-@page "/confirmar/{ProdutoId:guid}/{FuncionarioId:guid}"
+@page "/confirmar-expositor/{ProdutoId:guid}"
 @inject HttpClient Http
 @inject NavigationManager Nav
 @inject Prontag.Tablet.Services.ImpressoraService Impressora
@@ -6,8 +6,8 @@
 @using Prontag.Tablet.Services
 @using System.Net.Http.Json
 
-<a href="/produto">&lt; Voltar</a>
-<h3>Confira a etiqueta</h3>
+<a href="/expositor">&lt; Voltar</a>
+<h3>Confira a etiqueta (Expositor)</h3>
 
 <button @onclick="Conectar">🖨️ Conectar impressora</button>
 @if (!string.IsNullOrEmpty(statusConexao))
@@ -15,7 +15,7 @@
     <p><em>@statusConexao</em></p>
 }
 
-@if (produto is null || funcionario is null)
+@if (produto is null)
 {
     <p>Carregando...</p>
 }
@@ -27,9 +27,9 @@ else
 {
     <div>
         <p><strong>Produto:</strong> @produto.Nome</p>
+        <p><strong>Preço:</strong> @(produto.Preco?.ToString("C") ?? "não informado")</p>
         <p><strong>Fabricação:</strong> @fabricacao.ToString("dd/MM/yyyy")</p>
         <p><strong>Vencimento:</strong> @vencimento.ToString("dd/MM/yyyy")</p>
-        <p><strong>Responsável:</strong> @funcionario.Nome</p>
     </div>
 
     <button @onclick="Imprimir" disabled="@imprimindo">
@@ -44,10 +44,8 @@ else
 
 @code {
     [Parameter] public Guid ProdutoId { get; set; }
-    [Parameter] public Guid FuncionarioId { get; set; }
 
     private Produto? produto;
-    private Funcionario? funcionario;
     private DateOnly fabricacao;
     private DateOnly vencimento;
     private bool imprimindo;
@@ -59,9 +57,6 @@ else
     {
         var produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos");
         produto = produtos?.FirstOrDefault(p => p.Id == ProdutoId);
-
-        var funcionarios = await Http.GetFromJsonAsync<List<Funcionario>>("funcionarios");
-        funcionario = funcionarios?.FirstOrDefault(f => f.Id == FuncionarioId);
 
         fabricacao = DateOnly.FromDateTime(DateTime.Now);
         vencimento = fabricacao.AddDays(produto?.DiasValidade ?? 0);
@@ -83,12 +78,13 @@ else
     private async Task Imprimir()
     {
         imprimindo = true;
-        var zpl = ZplBuilder.EtiquetaProduto(produto!.Nome, fabricacao, vencimento, funcionario!.Nome);
+        var zpl = ZplBuilder.EtiquetaExpositor(produto!.Nome, produto.Preco, fabricacao, vencimento);
 
         try
         {
             await Impressora.ImprimirAsync(zpl);
-            var request = new { ProdutoId, FuncionarioId, Tipo = 0 };
+
+            var request = new { ProdutoId, FuncionarioId = (Guid?)null, Tipo = 1 };
             var response = await Http.PostAsJsonAsync("impressoes", request);
 
             if (response.IsSuccessStatusCode)

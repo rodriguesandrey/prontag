@@ -1,0 +1,7 @@
+@page "/"
+@inject NavigationManager Nav
+
+<h3>Prontag</h3>
+
+<button @onclick='() => Nav.NavigateTo("/produto")'>Etiquetas para Produtos</button>
+<button @onclick='() => Nav.NavigateTo("/expositor")'>Etiquetas para Expositor</button>
