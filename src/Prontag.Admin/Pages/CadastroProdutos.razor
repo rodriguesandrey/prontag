@@ -6,11 +6,18 @@
 <a href="/">&lt; Voltar</a>
 <h3>Produtos</h3>
 
-<h4>Novo produto</h4>
-<div><label>Nome: <input @bind="novoNome" /></label></div>
-<div><label>Dias de validade: <input type="number" @bind="novoDiasValidade" /></label></div>
-<div><label>Preço (opcional, usado no Expositor): <input type="number" step="0.01" @bind="novoPreco" /></label></div>
-<button @onclick="Cadastrar" disabled="@salvando">@(salvando ? "Salvando..." : "Cadastrar produto")</button>
+<h4>@(editandoId is null ? "Novo produto" : "Editando produto")</h4>
+<div><label>Nome: <input @bind="nome" /></label></div>
+<div><label>Dias de validade: <input type="number" @bind="diasValidade" /></label></div>
+<div><label>Preço (opcional, usado no Expositor): <input type="number" step="0.01" @bind="preco" /></label></div>
+
+<button @onclick="Salvar" disabled="@salvando">
+    @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar produto" : "Salvar edição")
+</button>
+@if (editandoId is not null)
+{
+    <button @onclick="CancelarEdicao">Cancelar</button>
+}
 @if (!string.IsNullOrEmpty(mensagem))
 {
     <p><em>@mensagem</em></p>
@@ -25,7 +32,7 @@ else
 {
     <table>
         <thead>
-            <tr><th>Nome</th><th>Dias de validade</th><th>Preço</th></tr>
+            <tr><th>Nome</th><th>Dias de validade</th><th>Preço</th><th></th></tr>
         </thead>
         <tbody>
             @foreach (var p in produtos)
@@ -34,6 +41,10 @@ else
                     <td>@p.Nome</td>
                     <td>@p.DiasValidade</td>
                     <td>@(p.Preco?.ToString("C") ?? "-")</td>
+                    <td>
+                        <button @onclick="() => EditarClique(p)">Editar</button>
+                        <button @onclick="() => RemoverClique(p)">Remover</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -42,9 +53,10 @@ else
 
 @code {
     private List<Produto>? produtos;
-    private string novoNome = "";
-    private int novoDiasValidade;
-    private decimal? novoPreco;
+    private Guid? editandoId;
+    private string nome = "";
+    private int diasValidade;
+    private decimal? preco;
     private bool salvando;
     private string? mensagem;
 
@@ -58,31 +70,68 @@ else
         produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos");
     }
 
-    private async Task Cadastrar()
+    private void EditarClique(Produto produto)
     {
-        if (string.IsNullOrWhiteSpace(novoNome))
+        editandoId = produto.Id;
+        nome = produto.Nome;
+        diasValidade = produto.DiasValidade;
+        preco = produto.Preco;
+        mensagem = null;
+    }
+
+    private void CancelarEdicao()
+    {
+        editandoId = null;
+        nome = "";
+        diasValidade = 0;
+        preco = null;
+    }
+
+    private async Task Salvar()
+    {
+        if (string.IsNullOrWhiteSpace(nome))
         {
             mensagem = "Informe o nome do produto.";
             return;
         }
 
         salvando = true;
-        var novoProduto = new { Nome = novoNome, DiasValidade = novoDiasValidade, Preco = novoPreco };
-        var response = await Http.PostAsJsonAsync("produtos", novoProduto);
+        var dados = new { Nome = nome, DiasValidade = diasValidade, Preco = preco };
+
+        HttpResponseMessage response;
+        if (editandoId is null)
+        {
+            response = await Http.PostAsJsonAsync("produtos", dados);
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync($"produtos/{editandoId}", dados);
+        }
 
         if (response.IsSuccessStatusCode)
         {
-            mensagem = $"Produto \"{novoNome}\" cadastrado!";
-            novoNome = "";
-            novoDiasValidade = 0;
-            novoPreco = null;
+            mensagem = editandoId is null ? $"Produto \"{nome}\" cadastrado!" : "Produto atualizado!";
+            CancelarEdicao();
             await CarregarProdutos();
         }
         else
         {
-            mensagem = "Erro ao cadastrar produto.";
+            mensagem = "Erro ao salvar produto.";
         }
 
         salvando = false;
+    }
+
+    private async Task RemoverClique(Produto produto)
+    {
+        var response = await Http.DeleteAsync($"produtos/{produto.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            await CarregarProdutos();
+        }
+        else
+        {
+            mensagem = "Erro ao remover produto.";
+        }
     }
 }
