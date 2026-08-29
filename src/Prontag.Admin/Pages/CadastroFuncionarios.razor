@@ -1,0 +1,73 @@
+@page "/funcionarios"
+@inject HttpClient Http
+@using Prontag.Domain
+@using System.Net.Http.Json
+
+<a href="/">&lt; Voltar</a>
+<h3>Funcionários</h3>
+
+<h4>Novo funcionário</h4>
+<div><label>Nome: <input @bind="novoNome" /></label></div>
+<button @onclick="Cadastrar" disabled="@salvando">@(salvando ? "Salvando..." : "Cadastrar funcionário")</button>
+@if (!string.IsNullOrEmpty(mensagem))
+{
+    <p><em>@mensagem</em></p>
+}
+
+<h4>Funcionários cadastrados</h4>
+@if (funcionarios is null)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    <ul>
+        @foreach (var f in funcionarios)
+        {
+            <li>@f.Nome</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Funcionario>? funcionarios;
+    private string novoNome = "";
+    private bool salvando;
+    private string? mensagem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarFuncionarios();
+    }
+
+    private async Task CarregarFuncionarios()
+    {
+        funcionarios = await Http.GetFromJsonAsync<List<Funcionario>>("funcionarios");
+    }
+
+    private async Task Cadastrar()
+    {
+        if (string.IsNullOrWhiteSpace(novoNome))
+        {
+            mensagem = "Informe o nome do funcionário.";
+            return;
+        }
+
+        salvando = true;
+        var novoFuncionario = new { Nome = novoNome };
+        var response = await Http.PostAsJsonAsync("funcionarios", novoFuncionario);
+
+        if (response.IsSuccessStatusCode)
+        {
+            mensagem = $"Funcionário \"{novoNome}\" cadastrado!";
+            novoNome = "";
+            await CarregarFuncionarios();
+        }
+        else
+        {
+            mensagem = "Erro ao cadastrar funcionário.";
+        }
+
+        salvando = false;
+    }
+}
