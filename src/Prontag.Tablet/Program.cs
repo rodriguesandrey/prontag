@@ -11,4 +11,5 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri("https://organic-xylophone-wpjqgpw5vvgfgqqx-5152.app.github.dev/")
 });
 
+builder.Services.AddScoped<Prontag.Tablet.Services.ImpressoraService>();
 await builder.Build().RunAsync();

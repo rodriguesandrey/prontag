@@ -1,11 +1,19 @@
 @page "/confirmar/{ProdutoId:guid}/{FuncionarioId:guid}"
 @inject HttpClient Http
 @inject NavigationManager Nav
+@inject Prontag.Tablet.Services.ImpressoraService Impressora
 @using Prontag.Domain
+@using Prontag.Tablet.Services
 @using System.Net.Http.Json
 
 <a href="/">&lt; Voltar</a>
 <h3>Confira a etiqueta</h3>
+
+<button @onclick="Conectar">🖨️ Conectar impressora</button>
+@if (!string.IsNullOrEmpty(statusConexao))
+{
+    <p><em>@statusConexao</em></p>
+}
 
 @if (produto is null || funcionario is null)
 {
@@ -19,14 +27,19 @@ else
 {
     <div>
         <p><strong>Produto:</strong> @produto.Nome</p>
-        <p><strong>Fabricação:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
-        <p><strong>Vencimento:</strong> @DateOnly.FromDateTime(DateTime.Now).AddDays(produto.DiasValidade).ToString("dd/MM/yyyy")</p>
+        <p><strong>Fabricação:</strong> @fabricacao.ToString("dd/MM/yyyy")</p>
+        <p><strong>Vencimento:</strong> @vencimento.ToString("dd/MM/yyyy")</p>
         <p><strong>Responsável:</strong> @funcionario.Nome</p>
     </div>
 
     <button @onclick="Imprimir" disabled="@imprimindo">
         @(imprimindo ? "Imprimindo..." : "Imprimir etiqueta")
     </button>
+
+    @if (!string.IsNullOrEmpty(statusImpressao))
+    {
+        <p><em>@statusImpressao</em></p>
+    }
 }
 
 @code {
@@ -35,8 +48,12 @@ else
 
     private Produto? produto;
     private Funcionario? funcionario;
+    private DateOnly fabricacao;
+    private DateOnly vencimento;
     private bool imprimindo;
     private bool sucesso;
+    private string? statusConexao;
+    private string? statusImpressao;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,29 +62,47 @@ else
 
         var funcionarios = await Http.GetFromJsonAsync<List<Funcionario>>("funcionarios");
         funcionario = funcionarios?.FirstOrDefault(f => f.Id == FuncionarioId);
+
+        fabricacao = DateOnly.FromDateTime(DateTime.Now);
+        vencimento = fabricacao.AddDays(produto?.DiasValidade ?? 0);
+    }
+
+    private async Task Conectar()
+    {
+        try
+        {
+            var nome = await Impressora.ConectarAsync();
+            statusConexao = $"Conectado: {nome}";
+        }
+        catch (Exception ex)
+        {
+            statusConexao = $"Erro ao conectar: {ex.Message}";
+        }
     }
 
     private async Task Imprimir()
     {
         imprimindo = true;
+        var zpl = ZplBuilder.EtiquetaProduto(produto!.Nome, fabricacao, vencimento, funcionario!.Nome);
 
-        var request = new
+        try
         {
-            ProdutoId,
-            FuncionarioId,
-            Tipo = 0 // TipoEtiqueta.Produto
-        };
+            await Impressora.ImprimirAsync(zpl);
+            var request = new { ProdutoId, FuncionarioId, Tipo = 0 };
+            var response = await Http.PostAsJsonAsync("impressoes", request);
 
-        var response = await Http.PostAsJsonAsync("impressoes", request);
-
-        if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
+            {
+                sucesso = true;
+                await Task.Delay(2000);
+                Nav.NavigateTo("/");
+            }
+        }
+        catch (Exception ex)
         {
-            sucesso = true;
-            await Task.Delay(2000);
-            Nav.NavigateTo("/");
+            statusImpressao = $"Erro ao imprimir: {ex.Message}";
         }
 
         imprimindo = false;
- 
     }
 }
