@@ -20,5 +20,25 @@ public static class FuncionarioEndpoints
             await db.SaveChangesAsync();
             return Results.Created($"/funcionarios/{funcionario.Id}", funcionario);
         });
+        grupo.MapPut("/{id:guid}", async (Guid id, Funcionario atualizacao, ProntagDbContext db) =>
+{
+    var funcionario = await db.Funcionarios.FindAsync(id);
+    if (funcionario is null) return Results.NotFound();
+
+    funcionario.Nome = atualizacao.Nome;
+
+    await db.SaveChangesAsync();
+    return Results.Ok(funcionario);
+});
+
+grupo.MapDelete("/{id:guid}", async (Guid id, ProntagDbContext db) =>
+{
+    var funcionario = await db.Funcionarios.FindAsync(id);
+    if (funcionario is null) return Results.NotFound();
+
+    funcionario.Ativo = false;
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
     }
 }

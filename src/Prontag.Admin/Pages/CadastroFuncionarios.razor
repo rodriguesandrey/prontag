@@ -6,9 +6,16 @@
 <a href="/">&lt; Voltar</a>
 <h3>Funcionários</h3>
 
-<h4>Novo funcionário</h4>
-<div><label>Nome: <input @bind="novoNome" /></label></div>
-<button @onclick="Cadastrar" disabled="@salvando">@(salvando ? "Salvando..." : "Cadastrar funcionário")</button>
+<h4>@(editandoId is null ? "Novo funcionário" : "Editando funcionário")</h4>
+<div><label>Nome: <input @bind="nome" /></label></div>
+
+<button @onclick="Salvar" disabled="@salvando">
+    @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar funcionário" : "Salvar edição")
+</button>
+@if (editandoId is not null)
+{
+    <button @onclick="CancelarEdicao">Cancelar</button>
+}
 @if (!string.IsNullOrEmpty(mensagem))
 {
     <p><em>@mensagem</em></p>
@@ -21,17 +28,29 @@
 }
 else
 {
-    <ul>
-        @foreach (var f in funcionarios)
-        {
-            <li>@f.Nome</li>
-        }
-    </ul>
+    <table>
+        <thead>
+            <tr><th>Nome</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var f in funcionarios)
+            {
+                <tr>
+                    <td>@f.Nome</td>
+                    <td>
+                        <button @onclick="() => EditarClique(f)">Editar</button>
+                        <button @onclick="() => RemoverClique(f)">Remover</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 @code {
     private List<Funcionario>? funcionarios;
-    private string novoNome = "";
+    private Guid? editandoId;
+    private string nome = "";
     private bool salvando;
     private string? mensagem;
 
@@ -45,29 +64,64 @@ else
         funcionarios = await Http.GetFromJsonAsync<List<Funcionario>>("funcionarios");
     }
 
-    private async Task Cadastrar()
+    private void EditarClique(Funcionario funcionario)
     {
-        if (string.IsNullOrWhiteSpace(novoNome))
+        editandoId = funcionario.Id;
+        nome = funcionario.Nome;
+        mensagem = null;
+    }
+
+    private void CancelarEdicao()
+    {
+        editandoId = null;
+        nome = "";
+    }
+
+    private async Task Salvar()
+    {
+        if (string.IsNullOrWhiteSpace(nome))
         {
             mensagem = "Informe o nome do funcionário.";
             return;
         }
 
         salvando = true;
-        var novoFuncionario = new { Nome = novoNome };
-        var response = await Http.PostAsJsonAsync("funcionarios", novoFuncionario);
+        var dados = new { Nome = nome };
+
+        HttpResponseMessage response;
+        if (editandoId is null)
+        {
+            response = await Http.PostAsJsonAsync("funcionarios", dados);
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync($"funcionarios/{editandoId}", dados);
+        }
 
         if (response.IsSuccessStatusCode)
         {
-            mensagem = $"Funcionário \"{novoNome}\" cadastrado!";
-            novoNome = "";
+            mensagem = editandoId is null ? $"Funcionário \"{nome}\" cadastrado!" : "Funcionário atualizado!";
+            CancelarEdicao();
             await CarregarFuncionarios();
         }
         else
         {
-            mensagem = "Erro ao cadastrar funcionário.";
+            mensagem = "Erro ao salvar funcionário.";
         }
 
         salvando = false;
+    }
+
+    private async Task RemoverClique(Funcionario funcionario)
+    {
+        var response = await Http.DeleteAsync($"funcionarios/{funcionario.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            await CarregarFuncionarios();
+        }
+        else
+        {
+            mensagem = "Erro ao remover funcionário.";
+        }
     }
 }
