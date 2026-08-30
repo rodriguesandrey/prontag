@@ -17,6 +17,7 @@ public class ProntagDbContext : DbContext
     public DbSet<Funcionario> Funcionarios => Set<Funcionario>();
     public DbSet<Impressao> Impressoes => Set<Impressao>();
     public DbSet<RelatorioMensal> RelatoriosMensais => Set<RelatorioMensal>();
+    public DbSet<AuditoriaAlteracao> AuditoriasAlteracao => Set<AuditoriaAlteracao>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,5 +27,6 @@ public class ProntagDbContext : DbContext
         modelBuilder.Entity<Funcionario>().HasQueryFilter(f => f.TenantId == _tenantProvider.TenantId);
         modelBuilder.Entity<Impressao>().HasQueryFilter(i => i.TenantId == _tenantProvider.TenantId);
         modelBuilder.Entity<RelatorioMensal>().HasQueryFilter(r => r.TenantId == _tenantProvider.TenantId);
+        modelBuilder.Entity<AuditoriaAlteracao>().HasQueryFilter(a => a.TenantId == _tenantProvider.TenantId);
     }
 }

@@ -1,0 +1,129 @@
+@page "/gestao/funcionarios"
+@inject HttpClient Http
+@using Prontag.Domain
+@using System.Net.Http.Json
+
+<a class="voltar-botao" href="/gestao">← Voltar</a>
+
+<div class="pagina-cabecalho">
+    <h3>Funcionários</h3>
+    <p>Cadastro de quem opera o sistema.</p>
+</div>
+
+<h4>@(editandoId is null ? "Novo funcionário" : "Editando funcionário")</h4>
+<div><label>Nome: <input @bind="nome" /></label></div>
+
+<button class="principal" @onclick="Salvar" disabled="@salvando">
+    @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar funcionário" : "Salvar edição")
+</button>
+@if (editandoId is not null)
+{
+    <button @onclick="CancelarEdicao">Cancelar</button>
+}
+@if (!string.IsNullOrEmpty(mensagem))
+{
+    <p class="aviso">@mensagem</p>
+}
+
+<h4>Funcionários cadastrados</h4>
+@if (funcionarios is null)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    <table>
+        <thead><tr><th>Nome</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var f in funcionarios)
+            {
+                <tr>
+                    <td>@f.Nome</td>
+                    <td>
+                        <button @onclick="() => EditarClique(f)">Editar</button>
+                        <button @onclick="() => RemoverClique(f)">Remover</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Funcionario>? funcionarios;
+    private Guid? editandoId;
+    private string nome = "";
+    private bool salvando;
+    private string? mensagem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarFuncionarios();
+    }
+
+    private async Task CarregarFuncionarios()
+    {
+        funcionarios = await Http.GetFromJsonAsync<List<Funcionario>>("funcionarios");
+    }
+
+    private void EditarClique(Funcionario funcionario)
+    {
+        editandoId = funcionario.Id;
+        nome = funcionario.Nome;
+        mensagem = null;
+    }
+
+    private void CancelarEdicao()
+    {
+        editandoId = null;
+        nome = "";
+    }
+
+    private async Task Salvar()
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+        {
+            mensagem = "Informe o nome do funcionário.";
+            return;
+        }
+
+        salvando = true;
+        var dados = new { Nome = nome };
+
+        HttpResponseMessage response;
+        if (editandoId is null)
+        {
+            response = await Http.PostAsJsonAsync("funcionarios", dados);
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync($"funcionarios/{editandoId}", dados);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            mensagem = editandoId is null ? $"Funcionário \"{nome}\" cadastrado!" : "Funcionário atualizado!";
+            CancelarEdicao();
+            await CarregarFuncionarios();
+        }
+        else
+        {
+            mensagem = "Erro ao salvar funcionário.";
+        }
+
+        salvando = false;
+    }
+
+    private async Task RemoverClique(Funcionario funcionario)
+    {
+        var response = await Http.DeleteAsync($"funcionarios/{funcionario.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            await CarregarFuncionarios();
+        }
+        else
+        {
+            mensagem = "Erro ao remover funcionário.";
+        }
+    }
+}

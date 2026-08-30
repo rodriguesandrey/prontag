@@ -1,0 +1,32 @@
+@page "/gestao"
+@inject NavigationManager Nav
+
+<a class="voltar-botao" href="/">← Voltar</a>
+
+<div class="pagina-cabecalho">
+    <h3>Gestão</h3>
+    <p>Produtos, funcionários e relatórios da operação.</p>
+</div>
+
+<div class="grade-cartoes">
+    <div class="cartao" @onclick='() => Nav.NavigateTo("/gestao/expositor-precos")'>
+        <div class="cartao-icone icone-b">🛒</div>
+        <h4>Etiquetas expositor</h4>
+        <p>Defina o preço de cada produto usado no expositor.</p>
+    </div>
+    <div class="cartao" @onclick='() => Nav.NavigateTo("/gestao/produtos")'>
+        <div class="cartao-icone icone-a">🏷️</div>
+        <h4>Etiquetas produtos</h4>
+        <p>Cadastre produtos e os dias de validade de cada um.</p>
+    </div>
+    <div class="cartao" @onclick='() => Nav.NavigateTo("/gestao/funcionarios")'>
+        <div class="cartao-icone icone-c">👥</div>
+        <h4>Funcionários</h4>
+        <p>Cadastre e edite a lista de funcionários.</p>
+    </div>
+    <div class="cartao" @onclick='() => Nav.NavigateTo("/gestao/relatorios")'>
+        <div class="cartao-icone icone-d">📊</div>
+        <h4>Relatórios</h4>
+        <p>Etiquetas emitidas por funcionário, filtradas por período.</p>
+    </div>
+</div>

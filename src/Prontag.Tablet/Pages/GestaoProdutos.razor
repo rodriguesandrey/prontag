@@ -1,0 +1,140 @@
+@page "/gestao/produtos"
+@inject HttpClient Http
+@using Prontag.Domain
+@using System.Net.Http.Json
+
+<a class="voltar-botao" href="/gestao">← Voltar</a>
+
+<div class="pagina-cabecalho">
+    <h3>Etiquetas produtos</h3>
+    <p>Nome e dias de validade de cada produto.</p>
+</div>
+
+<h4>@(editandoId is null ? "Novo produto" : "Editando produto")</h4>
+<div><label>Nome: <input @bind="nome" /></label></div>
+<div><label>Dias de validade: <input type="number" @bind="diasValidade" /></label></div>
+
+<button class="principal" @onclick="Salvar" disabled="@salvando">
+    @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar produto" : "Salvar edição")
+</button>
+@if (editandoId is not null)
+{
+    <button @onclick="CancelarEdicao">Cancelar</button>
+}
+@if (!string.IsNullOrEmpty(mensagem))
+{
+    <p class="aviso">@mensagem</p>
+}
+
+<h4>Produtos cadastrados</h4>
+@if (produtos is null)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    <table>
+        <thead><tr><th>Nome</th><th>Dias</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var p in produtos)
+            {
+                <tr>
+                    <td>@p.Nome</td>
+                    <td>@p.DiasValidade</td>
+                    <td>
+                        <button @onclick="() => EditarClique(p)">Editar</button>
+                        <button @onclick="() => RemoverClique(p)">Remover</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Produto>? produtos;
+    private Guid? editandoId;
+    private string nome = "";
+    private int diasValidade;
+    private decimal? precoAtual;
+    private string? iconeAtual;
+    private bool salvando;
+    private string? mensagem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarProdutos();
+    }
+
+    private async Task CarregarProdutos()
+    {
+        produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos");
+    }
+
+    private void EditarClique(Produto produto)
+    {
+        editandoId = produto.Id;
+        nome = produto.Nome;
+        diasValidade = produto.DiasValidade;
+        precoAtual = produto.Preco;
+        iconeAtual = produto.Icone;
+        mensagem = null;
+    }
+
+    private void CancelarEdicao()
+    {
+        editandoId = null;
+        nome = "";
+        diasValidade = 0;
+        precoAtual = null;
+        iconeAtual = null;
+    }
+
+    private async Task Salvar()
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+        {
+            mensagem = "Informe o nome do produto.";
+            return;
+        }
+
+        salvando = true;
+        var dados = new { Nome = nome, DiasValidade = diasValidade, Preco = precoAtual, Icone = iconeAtual };
+
+        HttpResponseMessage response;
+        if (editandoId is null)
+        {
+            response = await Http.PostAsJsonAsync("produtos", dados);
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync($"produtos/{editandoId}", dados);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            mensagem = editandoId is null ? $"Produto \"{nome}\" cadastrado!" : "Produto atualizado!";
+            CancelarEdicao();
+            await CarregarProdutos();
+        }
+        else
+        {
+            mensagem = "Erro ao salvar produto.";
+        }
+
+        salvando = false;
+    }
+
+    private async Task RemoverClique(Produto produto)
+    {
+        var response = await Http.DeleteAsync($"produtos/{produto.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            await CarregarProdutos();
+        }
+        else
+        {
+            mensagem = "Erro ao remover produto.";
+        }
+    }
+}

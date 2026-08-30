@@ -1,0 +1,75 @@
+@page "/gestao/relatorios"
+@inject HttpClient Http
+@using System.Net.Http.Json
+
+<a class="voltar-botao" href="/gestao">← Voltar</a>
+
+<div class="pagina-cabecalho">
+    <h3>Relatórios</h3>
+    <p>Etiquetas emitidas por funcionário, no período selecionado.</p>
+</div>
+
+<div><label>De: <input type="date" @bind="inicio" /></label></div>
+<div><label>Até: <input type="date" @bind="fim" /></label></div>
+<button class="principal" @onclick="Buscar" disabled="@carregando">
+    @(carregando ? "Buscando..." : "Buscar")
+</button>
+
+@if (!string.IsNullOrEmpty(mensagem))
+{
+    <p class="aviso">@mensagem</p>
+}
+
+@if (resultado is not null)
+{
+    <table>
+        <thead><tr><th>Funcionário</th><th>Etiquetas produto</th><th>Etiquetas expositor</th><th>Total</th></tr></thead>
+        <tbody>
+            @foreach (var r in resultado)
+            {
+                <tr>
+                    <td>@r.Funcionario</td>
+                    <td>@r.EtiquetasProduto</td>
+                    <td>@r.EtiquetasExpositor</td>
+                    <td>@r.Total</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private DateTime inicio = DateTime.Today.AddDays(-30);
+    private DateTime fim = DateTime.Today;
+    private bool carregando;
+    private string? mensagem;
+    private List<LinhaRelatorio>? resultado;
+
+    private async Task Buscar()
+    {
+        carregando = true;
+        mensagem = null;
+
+        var inicioStr = inicio.ToString("yyyy-MM-dd");
+        var fimStr = fim.ToString("yyyy-MM-dd");
+
+        try
+        {
+            resultado = await Http.GetFromJsonAsync<List<LinhaRelatorio>>($"relatorios?inicio={inicioStr}&fim={fimStr}");
+        }
+        catch
+        {
+            mensagem = "Erro ao buscar relatório.";
+        }
+
+        carregando = false;
+    }
+
+    private class LinhaRelatorio
+    {
+        public string Funcionario { get; set; } = "";
+        public int EtiquetasProduto { get; set; }
+        public int EtiquetasExpositor { get; set; }
+        public int Total { get; set; }
+    }
+}
