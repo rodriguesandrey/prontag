@@ -1,0 +1,42 @@
+@page "/login"
+@inject Prontag.Tablet.Services.AuthService Auth
+@inject NavigationManager Nav
+
+<div class="hero">
+    <span class="selo">Prontag</span>
+    <h1>Entrar</h1>
+</div>
+
+<div><label>Login: <input @bind="login" /></label></div>
+<div><label>Senha: <input type="password" @bind="senha" /></label></div>
+
+<button class="principal" @onclick="Entrar" disabled="@entrando">
+    @(entrando ? "Entrando..." : "Entrar")
+</button>
+
+@if (!string.IsNullOrEmpty(mensagem))
+{
+    <p class="aviso">@mensagem</p>
+}
+
+@code {
+    private string login = "";
+    private string senha = "";
+    private bool entrando;
+    private string? mensagem;
+
+    private async Task Entrar()
+    {
+        entrando = true;
+        var sucesso = await Auth.LoginAsync(login, senha);
+        if (sucesso)
+        {
+            Nav.NavigateTo("/");
+        }
+        else
+        {
+            mensagem = "Login ou senha inválidos.";
+        }
+        entrando = false;
+    }
+}

@@ -12,4 +12,5 @@ builder.Services.AddScoped(sp => new HttpClient
 });
 
 builder.Services.AddScoped<Prontag.Tablet.Services.ImpressoraService>();
+builder.Services.AddScoped<Prontag.Tablet.Services.AuthService>();
 await builder.Build().RunAsync();

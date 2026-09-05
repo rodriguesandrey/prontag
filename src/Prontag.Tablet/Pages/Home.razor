@@ -1,26 +1,30 @@
 @page "/"
 @inject NavigationManager Nav
+@inject Prontag.Tablet.Services.AuthService Auth
 
 <div class="hero">
     <span class="selo">Emissão de etiquetas para áreas de produção</span>
-    <h1>Etiquetas prontas.<br />Produção em dia.</h1>
+    <h1>Etiquetas prontas. Produção em dia.</h1>
     <p>Sistema rápido e confiável para identificar produtos e operações direto no chão de fábrica.</p>
 </div>
 
 <div class="grade-cartoes">
-    <div class="cartao" @onclick='() => Nav.NavigateTo("/produto")'>
+    <div class="cartao cartao-a" @onclick='() => Nav.NavigateTo("/produto")'>
         <div class="cartao-icone icone-a">🏷️</div>
         <h4>Etiquetas de produtos</h4>
         <p>Emita etiquetas de fabricação e vencimento para itens abertos ou produzidos.</p>
     </div>
-    <div class="cartao" @onclick='() => Nav.NavigateTo("/expositor")'>
+    <div class="cartao cartao-b" @onclick='() => Nav.NavigateTo("/expositor")'>
         <div class="cartao-icone icone-b">🛒</div>
         <h4>Etiquetas do expositor</h4>
         <p>Emita etiquetas de identificação para o expositor de autosserviço.</p>
     </div>
-    <div class="cartao" @onclick='() => Nav.NavigateTo("/gestao")'>
-        <div class="cartao-icone icone-c">⚙️</div>
-        <h4>Gestão</h4>
-        <p>Acompanhe e administre produtos, funcionários e relatórios.</p>
-    </div>
+    @if (Auth.Papel == "Admin")
+    {
+        <div class="cartao cartao-c" @onclick='() => Nav.NavigateTo("/gestao")'>
+            <div class="cartao-icone icone-c">⚙️</div>
+            <h4>Gestão</h4>
+            <p>Acompanhe e administre produtos, funcionários e relatórios.</p>
+        </div>
+    }
 </div>

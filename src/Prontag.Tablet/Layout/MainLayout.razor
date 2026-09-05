@@ -1,5 +1,38 @@
 @inherits LayoutComponentBase
+@inject Prontag.Tablet.Services.AuthService Auth
+@inject NavigationManager Nav
 
 <div class="app-container">
-    @Body
+    <div class="marca">
+        <span class="marca-icone">P</span>
+        <span class="marca-texto">Pront<span class="marca-destaque">ag</span></span>
+    </div>
+
+    @if (!pronto)
+    {
+        <p>Carregando...</p>
+    }
+    else if (!Auth.Autenticado && Nav.Uri.EndsWith("/login") == false)
+    {
+        <p>Redirecionando para login...</p>
+    }
+    else
+    {
+        @Body
+    }
 </div>
+
+@code {
+    private bool pronto;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Auth.InicializarAsync();
+        pronto = true;
+
+        if (!Auth.Autenticado && !Nav.Uri.EndsWith("/login"))
+        {
+            Nav.NavigateTo("/login");
+        }
+    }
+}

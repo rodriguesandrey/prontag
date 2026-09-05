@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Prontag — Etiquetas prontas. Produção em dia.</title>
+<meta name="description" content="Sistema rápido e confiável para identificar produtos e operações direto no chão de fábrica." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cor-fundo: #12151A;
+    --cor-texto: #F2F3F5;
+    --cor-texto-suave: #9CA3AF;
+    --cor-superficie: #1C2129;
+    --cor-destaque: #F2A63A;
+    --cor-destaque-escuro: #D98F1F;
+    --cor-borda: #2A303B;
+    --fonte-titulo: 'Sora', sans-serif;
+    --fonte-corpo: 'Inter', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background-color: var(--cor-fundo);
+    background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 14px);
+    color: var(--cor-texto);
+    font-family: var(--fonte-corpo);
+    line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  .topo {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1080px; margin: 0 auto; padding: 20px 24px;
+  }
+  .marca { display: flex; align-items: center; gap: 10px; }
+  .marca-icone {
+    width: 34px; height: 34px; background: var(--cor-destaque); color: #14181F;
+    border-radius: 9px; display: flex; align-items: center; justify-content: center;
+    font-family: var(--fonte-titulo); font-weight: 700; font-size: 1.05rem;
+  }
+  .marca-texto { font-family: var(--fonte-titulo); font-weight: 700; font-size: 1.2rem; }
+  .marca-texto .destaque { color: var(--cor-destaque); }
+  .entrar-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--fonte-titulo); font-weight: 600; font-size: 0.9rem;
+    background: var(--cor-superficie); border: 1px solid var(--cor-borda);
+    padding: 9px 18px; border-radius: 999px; transition: border-color .15s ease;
+  }
+  .entrar-btn:hover { border-color: var(--cor-destaque); }
+
+  .hero { max-width: 1080px; margin: 0 auto; padding: 48px 24px 24px; }
+  .selo {
+    display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--cor-destaque);
+    background: rgba(242,166,58,0.12); border: 1px solid rgba(242,166,58,0.35);
+    border-radius: 999px; padding: 4px 12px; margin-bottom: 16px;
+  }
+  .hero h1 { font-family: var(--fonte-titulo); font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; margin: 0 0 16px; max-width: 640px; }
+  .hero p { color: var(--cor-texto-suave); font-size: 1.05rem; max-width: 560px; margin: 0 0 28px; }
+  .cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--fonte-titulo); font-weight: 700; font-size: 0.95rem;
+    background: var(--cor-destaque); color: #14181F; border: none;
+    padding: 14px 26px; border-radius: 10px; cursor: pointer;
+  }
+  .cta:hover { background: var(--cor-destaque-escuro); }
+
+  .secao { max-width: 1080px; margin: 0 auto; padding: 40px 24px; }
+  .secao h2 { font-family: var(--fonte-titulo); font-size: 1.6rem; margin: 0 0 8px; }
+  .secao > p { color: var(--cor-texto-suave); max-width: 620px; margin: 0 0 28px; }
+
+  .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .cartao {
+    background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 14px;
+    padding: 22px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .cartao-icone {
+    width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; font-size: 1.2rem; margin-bottom: 4px;
+  }
+  .icone-a { background: rgba(242,166,58,.15); color: var(--cor-destaque); }
+  .icone-b { background: rgba(93,202,165,.15); color: #5DCAA5; }
+  .icone-c { background: rgba(127,119,221,.15); color: #7F77DD; }
+  .cartao h3 { font-family: var(--fonte-titulo); font-size: 1.05rem; margin: 0; }
+  .cartao p { color: var(--cor-texto-suave); font-size: 0.9rem; margin: 0; }
+
+  .rodape {
+    max-width: 1080px; margin: 0 auto; padding: 32px 24px 48px;
+    border-top: 1px solid var(--cor-borda); color: var(--cor-texto-suave); font-size: 0.85rem;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="topo">
+    <div class="marca">
+      <span class="marca-icone">P</span>
+      <span class="marca-texto">Pront<span class="destaque">ag</span></span>
+    </div>
+    <a class="entrar-btn" href="https://SEU-DOMINIO-DO-TABLET-AQUI">→ Entrar</a>
+  </div>
+
+  <div class="hero">
+    <span class="selo">Emissão de etiquetas para áreas de produção</span>
+    <h1>Etiquetas prontas. Produção em dia.</h1>
+    <p>Sistema rápido e confiável para identificar produtos, controlar validade e organizar o expositor — direto no chão de fábrica, sem planilha e sem gambiarra.</p>
+    <a class="cta" href="https://SEU-DOMINIO-DO-TABLET-AQUI">Quero conhecer →</a>
+  </div>
+
+  <div class="secao">
+    <h2>O que o Prontag resolve</h2>
+    <p>Controle de vencimento, etiqueta de expositor e gestão de produtos, tudo em um único sistema pensado pra operação do dia a dia.</p>
+    <div class="grade">
+      <div class="cartao">
+        <div class="cartao-icone icone-a">🏷️</div>
+        <h3>Etiquetas de produtos</h3>
+        <p>Fabricação e vencimento calculados automaticamente, sem depender de calculadora ou planilha.</p>
+      </div>
+      <div class="cartao">
+        <div class="cartao-icone icone-b">🛒</div>
+        <h3>Etiquetas do expositor</h3>
+        <p>Identificação de produto e preço prontos pra impressão no autosserviço.</p>
+      </div>
+      <div class="cartao">
+        <div class="cartao-icone icone-c">⚙️</div>
+        <h3>Gestão simples</h3>
+        <p>Cadastro de produtos, funcionários e relatórios por período, sem burocracia.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rodape">
+    <span>© 2026 Prontag</span>
+    <span>Sistema de emissão de etiquetas para áreas de produção</span>
+  </div>
+
+</body>
+</html>

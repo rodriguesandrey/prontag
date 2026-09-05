@@ -45,6 +45,8 @@ app.MapGet("/weatherforecast", () =>
 app.MapProdutoEndpoints();
 app.MapFuncionarioEndpoints();
 app.MapImpressaoEndpoints();
+app.MapAuthEndpoints();
+app.MapUsuarioEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
