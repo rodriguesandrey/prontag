@@ -14,6 +14,11 @@ builder.Services.AddDbContext<ProntagDbContext>(options =>
 builder.Services.AddScoped<ITenantProvider, FixedTenantProvider>();
 builder.Services.AddCors();
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ProntagDbContext>();
+    db.Database.Migrate();
+}
 app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 // Configure the HTTP request pipeline.
