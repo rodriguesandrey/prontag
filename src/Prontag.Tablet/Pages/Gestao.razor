@@ -5,14 +5,14 @@
 
 <div class="pagina-cabecalho">
     <h3>Gestão</h3>
-    <p>Produtos, funcionários e relatórios da operação.</p>
+    <p>Produtos, funcionários, usuários e relatórios da operação.</p>
 </div>
 
 <div class="grade-cartoes">
     <div class="cartao cartao-b" @onclick='() => Nav.NavigateTo("/gestao/expositor-precos")'>
         <div class="cartao-icone icone-b">🛒</div>
         <h4>Etiquetas expositor</h4>
-        <p>Defina o preço de cada produto usado no expositor.</p>
+        <p>Cadastre itens e defina o preço de cada um para o expositor.</p>
     </div>
     <div class="cartao cartao-a" @onclick='() => Nav.NavigateTo("/gestao/produtos")'>
         <div class="cartao-icone icone-a">🏷️</div>
@@ -28,5 +28,10 @@
         <div class="cartao-icone icone-d">📊</div>
         <h4>Relatórios</h4>
         <p>Etiquetas emitidas por funcionário, filtradas por período.</p>
+    </div>
+    <div class="cartao cartao-c" @onclick='() => Nav.NavigateTo("/gestao/usuarios")'>
+        <div class="cartao-icone icone-c">🔐</div>
+        <h4>Usuários</h4>
+        <p>Crie e remova logins de administradores e funcionários.</p>
     </div>
 </div>

@@ -9,74 +9,78 @@
     <p>Login de administradores e funcionários. Senha: pelo menos 4 números e 1 letra.</p>
 </div>
 
-<div><label>Nome: <input @bind="nome" /></label></div>
-<div><label>Login: <input @bind="login" /></label></div>
-<div>
-    <label>Senha:
+<div class="secao">
+    <p class="secao-titulo">Novo usuário</p>
+    <div class="campo"><label>Nome</label><input @bind="nome" /></div>
+    <div class="campo"><label>Login</label><input @bind="login" /></div>
+    <div class="campo">
+        <label>Senha</label>
         <input type="@(mostrarSenha ? "text" : "password")" @bind="senha" />
-    </label>
-    <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.85rem;">
-        <input type="checkbox" style="width:auto" @bind="mostrarSenha" /> Mostrar
-    </label>
-</div>
-<div>
-    <label>Papel:
+        <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.8rem; text-transform:none; font-weight:400; margin-top:6px;">
+            <input type="checkbox" style="width:auto" @bind="mostrarSenha" /> Mostrar
+        </label>
+    </div>
+    <div class="campo">
+        <label>Papel</label>
         <select @bind="papel">
             <option value="Funcionario">Funcionário</option>
             <option value="Admin">Admin</option>
         </select>
-    </label>
+    </div>
+    <button class="principal" @onclick="Salvar" disabled="@salvando">
+        @(salvando ? "Salvando..." : "Cadastrar usuário")
+    </button>
+    @if (!string.IsNullOrEmpty(mensagem))
+    {
+        <p class="aviso">@mensagem</p>
+    }
 </div>
-
-<button class="principal" @onclick="Salvar" disabled="@salvando">
-    @(salvando ? "Salvando..." : "Cadastrar usuário")
-</button>
-@if (!string.IsNullOrEmpty(mensagem))
-{
-    <p class="aviso">@mensagem</p>
-}
 
 @if (usuarios is not null && usuarios.Any(u => u.PedidoRedefinicao))
 {
-    <h4>Pedidos de redefinição de senha</h4>
-    <table>
-        <thead><tr><th>Nome</th><th>Login</th><th>Nova senha</th><th></th></tr></thead>
-        <tbody>
-            @foreach (var u in usuarios.Where(u => u.PedidoRedefinicao))
-            {
-                <tr>
-                    <td>@u.Nome</td>
-                    <td>@u.Login</td>
-                    <td><input @bind="novasSenhas[u.Id]" placeholder="ex: novo1234" /></td>
-                    <td><button class="principal" @onclick="() => Redefinir(u.Id)">Definir</button></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="secao">
+        <p class="secao-titulo">Pedidos de redefinição de senha</p>
+        <table>
+            <thead><tr><th>Nome</th><th>Login</th><th>Nova senha</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var u in usuarios.Where(u => u.PedidoRedefinicao))
+                {
+                    <tr>
+                        <td>@u.Nome</td>
+                        <td>@u.Login</td>
+                        <td><input @bind="novasSenhas[u.Id]" placeholder="ex: novo1234" style="max-width:160px" /></td>
+                        <td><button class="principal" @onclick="() => Redefinir(u.Id)">Definir</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
-<h4>Usuários cadastrados</h4>
-@if (usuarios is null)
-{
-    <p>Carregando...</p>
-}
-else
-{
-    <table>
-        <thead><tr><th>Nome</th><th>Login</th><th>Papel</th><th></th></tr></thead>
-        <tbody>
-            @foreach (var u in usuarios)
-            {
-                <tr>
-                    <td>@u.Nome</td>
-                    <td>@u.Login</td>
-                    <td>@u.Papel</td>
-                    <td><button @onclick="() => Remover(u.Id)">Remover</button></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<div class="secao">
+    <p class="secao-titulo">Usuários cadastrados</p>
+    @if (usuarios is null)
+    {
+        <p>Carregando...</p>
+    }
+    else
+    {
+        <table>
+            <thead><tr><th>Nome</th><th>Login</th><th>Papel</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var u in usuarios)
+                {
+                    <tr>
+                        <td>@u.Nome</td>
+                        <td>@u.Login</td>
+                        <td>@u.Papel</td>
+                        <td><button @onclick="() => Remover(u.Id)">Remover</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
 
 @code {
     private List<UsuarioDto>? usuarios;

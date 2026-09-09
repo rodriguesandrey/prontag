@@ -10,44 +10,47 @@
     <p>Cadastro de quem opera o sistema.</p>
 </div>
 
-<h4>@(editandoId is null ? "Novo funcionário" : "Editando funcionário")</h4>
-<div><label>Nome: <input @bind="nome" /></label></div>
+<div class="secao">
+    <p class="secao-titulo">@(editandoId is null ? "Novo funcionário" : "Editando funcionário")</p>
+    <div class="campo"><label>Nome</label><input @bind="nome" /></div>
+    <button class="principal" @onclick="Salvar" disabled="@salvando">
+        @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar funcionário" : "Salvar edição")
+    </button>
+    @if (editandoId is not null)
+    {
+        <button @onclick="CancelarEdicao">Cancelar</button>
+    }
+    @if (!string.IsNullOrEmpty(mensagem))
+    {
+        <p class="aviso">@mensagem</p>
+    }
+</div>
 
-<button class="principal" @onclick="Salvar" disabled="@salvando">
-    @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar funcionário" : "Salvar edição")
-</button>
-@if (editandoId is not null)
-{
-    <button @onclick="CancelarEdicao">Cancelar</button>
-}
-@if (!string.IsNullOrEmpty(mensagem))
-{
-    <p class="aviso">@mensagem</p>
-}
-
-<h4>Funcionários cadastrados</h4>
-@if (funcionarios is null)
-{
-    <p>Carregando...</p>
-}
-else
-{
-    <table>
-        <thead><tr><th>Nome</th><th></th></tr></thead>
-        <tbody>
-            @foreach (var f in funcionarios)
-            {
-                <tr>
-                    <td>@f.Nome</td>
-                    <td>
-                        <button @onclick="() => EditarClique(f)">Editar</button>
-                        <button @onclick="() => RemoverClique(f)">Remover</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<div class="secao">
+    <p class="secao-titulo">Funcionários cadastrados</p>
+    @if (funcionarios is null)
+    {
+        <p>Carregando...</p>
+    }
+    else
+    {
+        <table>
+            <thead><tr><th>Nome</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var f in funcionarios)
+                {
+                    <tr>
+                        <td>@f.Nome</td>
+                        <td>
+                            <button @onclick="() => EditarClique(f)">Editar</button>
+                            <button @onclick="() => RemoverClique(f)">Remover</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
 
 @code {
     private List<Funcionario>? funcionarios;
@@ -56,10 +59,7 @@ else
     private bool salvando;
     private string? mensagem;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await CarregarFuncionarios();
-    }
+    protected override async Task OnInitializedAsync() => await CarregarFuncionarios();
 
     private async Task CarregarFuncionarios()
     {
@@ -73,11 +73,7 @@ else
         mensagem = null;
     }
 
-    private void CancelarEdicao()
-    {
-        editandoId = null;
-        nome = "";
-    }
+    private void CancelarEdicao() { editandoId = null; nome = ""; }
 
     private async Task Salvar()
     {
@@ -90,15 +86,9 @@ else
         salvando = true;
         var dados = new { Nome = nome };
 
-        HttpResponseMessage response;
-        if (editandoId is null)
-        {
-            response = await Http.PostAsJsonAsync("funcionarios", dados);
-        }
-        else
-        {
-            response = await Http.PutAsJsonAsync($"funcionarios/{editandoId}", dados);
-        }
+        HttpResponseMessage response = editandoId is null
+            ? await Http.PostAsJsonAsync("funcionarios", dados)
+            : await Http.PutAsJsonAsync($"funcionarios/{editandoId}", dados);
 
         if (response.IsSuccessStatusCode)
         {
@@ -110,20 +100,13 @@ else
         {
             mensagem = "Erro ao salvar funcionário.";
         }
-
         salvando = false;
     }
 
     private async Task RemoverClique(Funcionario funcionario)
     {
         var response = await Http.DeleteAsync($"funcionarios/{funcionario.Id}");
-        if (response.IsSuccessStatusCode)
-        {
-            await CarregarFuncionarios();
-        }
-        else
-        {
-            mensagem = "Erro ao remover funcionário.";
-        }
+        if (response.IsSuccessStatusCode) await CarregarFuncionarios();
+        else mensagem = "Erro ao remover funcionário.";
     }
 }

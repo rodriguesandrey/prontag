@@ -10,46 +10,49 @@
     <p>Nome e dias de validade de cada produto.</p>
 </div>
 
-<h4>@(editandoId is null ? "Novo produto" : "Editando produto")</h4>
-<div><label>Nome: <input @bind="nome" /></label></div>
-<div><label>Dias de validade: <input type="number" @bind="diasValidade" /></label></div>
+<div class="secao">
+    <p class="secao-titulo">@(editandoId is null ? "Novo produto" : "Editando produto")</p>
+    <div class="campo"><label>Nome</label><input @bind="nome" /></div>
+    <div class="campo"><label>Dias de validade</label><input type="number" @bind="diasValidade" /></div>
+    <button class="principal" @onclick="Salvar" disabled="@salvando">
+        @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar produto" : "Salvar edição")
+    </button>
+    @if (editandoId is not null)
+    {
+        <button @onclick="CancelarEdicao">Cancelar</button>
+    }
+    @if (!string.IsNullOrEmpty(mensagem))
+    {
+        <p class="aviso">@mensagem</p>
+    }
+</div>
 
-<button class="principal" @onclick="Salvar" disabled="@salvando">
-    @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar produto" : "Salvar edição")
-</button>
-@if (editandoId is not null)
-{
-    <button @onclick="CancelarEdicao">Cancelar</button>
-}
-@if (!string.IsNullOrEmpty(mensagem))
-{
-    <p class="aviso">@mensagem</p>
-}
-
-<h4>Produtos cadastrados</h4>
-@if (produtos is null)
-{
-    <p>Carregando...</p>
-}
-else
-{
-    <table>
-        <thead><tr><th>Nome</th><th>Dias</th><th></th></tr></thead>
-        <tbody>
-            @foreach (var p in produtos)
-            {
-                <tr>
-                    <td>@p.Nome</td>
-                    <td>@p.DiasValidade</td>
-                    <td>
-                        <button @onclick="() => EditarClique(p)">Editar</button>
-                        <button @onclick="() => RemoverClique(p)">Remover</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<div class="secao">
+    <p class="secao-titulo">Produtos cadastrados</p>
+    @if (produtos is null)
+    {
+        <p>Carregando...</p>
+    }
+    else
+    {
+        <table>
+            <thead><tr><th>Nome</th><th>Dias</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var p in produtos)
+                {
+                    <tr>
+                        <td>@p.Nome</td>
+                        <td>@p.DiasValidade</td>
+                        <td>
+                            <button @onclick="() => EditarClique(p)">Editar</button>
+                            <button @onclick="() => RemoverClique(p)">Remover</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
 
 @code {
     private List<Produto>? produtos;
@@ -61,10 +64,7 @@ else
     private bool salvando;
     private string? mensagem;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await CarregarProdutos();
-    }
+    protected override async Task OnInitializedAsync() => await CarregarProdutos();
 
     private async Task CarregarProdutos()
     {
@@ -101,15 +101,9 @@ else
         salvando = true;
         var dados = new { Nome = nome, DiasValidade = diasValidade, Preco = precoAtual, Icone = iconeAtual };
 
-        HttpResponseMessage response;
-        if (editandoId is null)
-        {
-            response = await Http.PostAsJsonAsync("produtos", dados);
-        }
-        else
-        {
-            response = await Http.PutAsJsonAsync($"produtos/{editandoId}", dados);
-        }
+        HttpResponseMessage response = editandoId is null
+            ? await Http.PostAsJsonAsync("produtos", dados)
+            : await Http.PutAsJsonAsync($"produtos/{editandoId}", dados);
 
         if (response.IsSuccessStatusCode)
         {
@@ -121,20 +115,13 @@ else
         {
             mensagem = "Erro ao salvar produto.";
         }
-
         salvando = false;
     }
 
     private async Task RemoverClique(Produto produto)
     {
         var response = await Http.DeleteAsync($"produtos/{produto.Id}");
-        if (response.IsSuccessStatusCode)
-        {
-            await CarregarProdutos();
-        }
-        else
-        {
-            mensagem = "Erro ao remover produto.";
-        }
+        if (response.IsSuccessStatusCode) await CarregarProdutos();
+        else mensagem = "Erro ao remover produto.";
     }
 }
