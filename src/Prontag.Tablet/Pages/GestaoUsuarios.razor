@@ -11,7 +11,14 @@
 
 <div><label>Nome: <input @bind="nome" /></label></div>
 <div><label>Login: <input @bind="login" /></label></div>
-<div><label>Senha: <input type="password" @bind="senha" /></label></div>
+<div>
+    <label>Senha:
+        <input type="@(mostrarSenha ? "text" : "password")" @bind="senha" />
+    </label>
+    <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.85rem;">
+        <input type="checkbox" style="width:auto" @bind="mostrarSenha" /> Mostrar
+    </label>
+</div>
 <div>
     <label>Papel:
         <select @bind="papel">
@@ -27,6 +34,25 @@
 @if (!string.IsNullOrEmpty(mensagem))
 {
     <p class="aviso">@mensagem</p>
+}
+
+@if (usuarios is not null && usuarios.Any(u => u.PedidoRedefinicao))
+{
+    <h4>Pedidos de redefinição de senha</h4>
+    <table>
+        <thead><tr><th>Nome</th><th>Login</th><th>Nova senha</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var u in usuarios.Where(u => u.PedidoRedefinicao))
+            {
+                <tr>
+                    <td>@u.Nome</td>
+                    <td>@u.Login</td>
+                    <td><input @bind="novasSenhas[u.Id]" placeholder="ex: novo1234" /></td>
+                    <td><button class="principal" @onclick="() => Redefinir(u.Id)">Definir</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 <h4>Usuários cadastrados</h4>
@@ -54,7 +80,9 @@ else
 
 @code {
     private List<UsuarioDto>? usuarios;
+    private Dictionary<Guid, string> novasSenhas = new();
     private string nome = "", login = "", senha = "", papel = "Funcionario";
+    private bool mostrarSenha;
     private bool salvando;
     private string? mensagem;
 
@@ -84,6 +112,19 @@ else
         salvando = false;
     }
 
+    private async Task Redefinir(Guid id)
+    {
+        if (!novasSenhas.TryGetValue(id, out var novaSenha) || string.IsNullOrWhiteSpace(novaSenha))
+        {
+            mensagem = "Digite a nova senha antes de confirmar.";
+            return;
+        }
+
+        var resposta = await Http.PostAsync($"usuarios/{id}/redefinir-senha?novaSenha={novaSenha}", null);
+        mensagem = resposta.IsSuccessStatusCode ? "Senha redefinida!" : "Erro ao redefinir senha.";
+        await Carregar();
+    }
+
     private async Task Remover(Guid id)
     {
         await Http.DeleteAsync($"usuarios/{id}");
@@ -96,5 +137,6 @@ else
         public string Nome { get; set; } = "";
         public string Login { get; set; } = "";
         public string Papel { get; set; } = "";
+        public bool PedidoRedefinicao { get; set; }
     }
 }

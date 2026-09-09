@@ -10,4 +10,6 @@ public class Usuario : BaseEntity, ITenantEntity
     public Guid? Token { get; set; }
     public DateTime? TokenExpiraEm { get; set; }
     public bool Ativo { get; set; } = true;
+    public bool PedidoRedefinicao { get; set; }
+public DateTime? PedidoRedefinicaoEm { get; set; }
 }

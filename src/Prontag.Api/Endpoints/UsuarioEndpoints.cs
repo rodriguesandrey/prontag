@@ -55,5 +55,27 @@ public static class UsuarioEndpoints
             await db.SaveChangesAsync();
             return Results.NoContent();
         });
+
+        grupo.MapGet("/", async (ProntagDbContext db) =>
+    await db.Usuarios
+        .Where(u => u.Ativo)
+        .Select(u => new { u.Id, u.Nome, u.Login, u.Papel, u.PedidoRedefinicao, u.PedidoRedefinicaoEm })
+        .ToListAsync());
+
+        grupo.MapPost("/{id:guid}/redefinir-senha", async (Guid id, string novaSenha, ProntagDbContext db) =>
+{
+    if (!RegraSenha.IsMatch(novaSenha))
+        return Results.BadRequest("Senha precisa ter pelo menos 4 números e 1 letra.");
+
+    var usuario = await db.Usuarios.FindAsync(id);
+    if (usuario is null) return Results.NotFound();
+
+    usuario.SenhaHash = Hasher.HashPassword(usuario, novaSenha);
+    usuario.PedidoRedefinicao = false;
+    usuario.PedidoRedefinicaoEm = null;
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+});
     }
 }

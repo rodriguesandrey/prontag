@@ -1,18 +1,39 @@
 @page "/login"
 @inject Prontag.Tablet.Services.AuthService Auth
+@inject HttpClient Http
 @inject NavigationManager Nav
+@using System.Net.Http.Json
 
 <div class="hero">
     <span class="selo">Prontag</span>
     <h1>Entrar</h1>
 </div>
 
-<div><label>Login: <input @bind="login" /></label></div>
-<div><label>Senha: <input type="password" @bind="senha" /></label></div>
+@if (modoRecuperacao)
+{
+    <div><label>Login: <input @bind="login" /></label></div>
+    <button class="principal" @onclick="PedirRecuperacao" disabled="@enviando">
+        @(enviando ? "Enviando..." : "Solicitar redefinição")
+    </button>
+    <button @onclick="() => modoRecuperacao = false">Voltar pro login</button>
+}
+else
+{
+    <div><label>Login: <input @bind="login" /></label></div>
+    <div>
+        <label>Senha:
+            <input type="@(mostrarSenha ? "text" : "password")" @bind="senha" />
+        </label>
+        <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.85rem;">
+            <input type="checkbox" style="width:auto" @bind="mostrarSenha" /> Mostrar senha
+        </label>
+    </div>
 
-<button class="principal" @onclick="Entrar" disabled="@entrando">
-    @(entrando ? "Entrando..." : "Entrar")
-</button>
+    <button class="principal" @onclick="Entrar" disabled="@entrando">
+        @(entrando ? "Entrando..." : "Entrar")
+    </button>
+    <button @onclick="() => modoRecuperacao = true">Esqueci minha senha</button>
+}
 
 @if (!string.IsNullOrEmpty(mensagem))
 {
@@ -22,21 +43,28 @@
 @code {
     private string login = "";
     private string senha = "";
+    private bool mostrarSenha;
     private bool entrando;
+    private bool enviando;
+    private bool modoRecuperacao;
     private string? mensagem;
 
     private async Task Entrar()
     {
         entrando = true;
         var sucesso = await Auth.LoginAsync(login, senha);
-        if (sucesso)
-        {
-            Nav.NavigateTo("/");
-        }
-        else
-        {
-            mensagem = "Login ou senha inválidos.";
-        }
+        mensagem = sucesso ? null : "Login ou senha inválidos.";
+        if (sucesso) Nav.NavigateTo("/");
         entrando = false;
+    }
+
+    private async Task PedirRecuperacao()
+    {
+        enviando = true;
+        var resposta = await Http.PostAsJsonAsync("auth/esqueci-senha", new { Login = login, Senha = "" });
+        mensagem = resposta.IsSuccessStatusCode
+            ? "Pedido enviado! Fale com o administrador pra liberar seu acesso."
+            : "Login não encontrado.";
+        enviando = false;
     }
 }

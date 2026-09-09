@@ -35,5 +35,17 @@ public static class AuthEndpoints
 
             return Results.Ok(new { Nome = usuario.Nome, Papel = usuario.Papel });
         });
+
+        app.MapPost("/auth/esqueci-senha", async (LoginRequest req, ProntagDbContext db) =>
+{
+    var usuario = await db.Usuarios.FirstOrDefaultAsync(u => u.Login == req.Login && u.Ativo);
+    if (usuario is null) return Results.NotFound("Login não encontrado.");
+
+    usuario.PedidoRedefinicao = true;
+    usuario.PedidoRedefinicaoEm = DateTime.UtcNow;
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { Mensagem = "Pedido enviado. Fale com o administrador." });
+});
     }
 }

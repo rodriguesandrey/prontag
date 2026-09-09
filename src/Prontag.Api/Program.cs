@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ProntagDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ITenantProvider, FixedTenantProvider>();
 builder.Services.AddCors();
@@ -47,6 +47,7 @@ app.MapFuncionarioEndpoints();
 app.MapImpressaoEndpoints();
 app.MapAuthEndpoints();
 app.MapUsuarioEndpoints();
+app.MapRelatorioEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
