@@ -8,7 +8,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://organic-xylophone-wpjqgpw5vvgfgqqx-5152.app.github.dev/")
+    BaseAddress = new Uri("https://prontag-api.onrender.com")
 });
 
 builder.Services.AddScoped<Prontag.Tablet.Services.ImpressoraService>();
