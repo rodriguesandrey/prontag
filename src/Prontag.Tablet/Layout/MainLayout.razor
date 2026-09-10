@@ -1,42 +1,59 @@
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject Prontag.Tablet.Services.AuthService Auth
 @inject NavigationManager Nav
 
-<div class="app-container">
-    <div class="nav-superior">
-        <div class="marca">
-            <span class="marca-icone">P</span>
-            <span class="marca-texto">Pront<span class="marca-destaque">ag</span></span>
-        </div>
-        @if (Auth.Autenticado)
-        {
-            <div class="nav-acoes">
-                <span>@Auth.Nome</span>
-                <a href="/">Início</a>
-                <button @onclick="Sair">Sair</button>
+<div class="zona @ZonaClasse">
+    <div class="app-container">
+        <div class="nav-superior">
+            <div class="marca">
+                <span class="marca-icone">P</span>
+                <span class="marca-texto">Pront<span class="marca-destaque">ag</span></span>
             </div>
+            @if (Auth.Autenticado)
+            {
+                <div class="nav-acoes">
+                    <span>@Auth.Nome</span>
+                    <a href="/">Início</a>
+                    <button @onclick="Sair">Sair</button>
+                </div>
+            }
+        </div>
+
+        @if (!pronto)
+        {
+            <p>Carregando...</p>
+        }
+        else if (!Auth.Autenticado && !Nav.Uri.EndsWith("/login"))
+        {
+            <p>Redirecionando para login...</p>
+        }
+        else
+        {
+            @Body
         }
     </div>
-
-    @if (!pronto)
-    {
-        <p>Carregando...</p>
-    }
-    else if (!Auth.Autenticado && !Nav.Uri.EndsWith("/login"))
-    {
-        <p>Redirecionando para login...</p>
-    }
-    else
-    {
-        @Body
-    }
 </div>
 
 @code {
     private bool pronto;
 
+    private string ZonaClasse
+    {
+        get
+        {
+            var caminho = new Uri(Nav.Uri).AbsolutePath;
+            if (caminho.StartsWith("/gestao")) return "zona-roxa";
+            if (caminho.StartsWith("/expositor") || caminho.StartsWith("/confirmar-expositor")) return "zona-verde";
+            if (caminho.StartsWith("/produto") || caminho.StartsWith("/funcionario") || caminho.StartsWith("/confirmar/")) return "zona-laranja";
+            return "";
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        Nav.LocationChanged += AoNavegar;
+
         await Auth.InicializarAsync();
         pronto = true;
 
@@ -46,9 +63,19 @@
         }
     }
 
+    private void AoNavegar(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     private async Task Sair()
     {
         await Auth.LogoutAsync();
         Nav.NavigateTo("/login");
+    }
+
+    public void Dispose()
+    {
+        Nav.LocationChanged -= AoNavegar;
     }
 }
