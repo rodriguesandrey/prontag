@@ -6,13 +6,16 @@
 @using Prontag.Tablet.Services
 @using System.Net.Http.Json
 
-<a href="/expositor">&lt; Voltar</a>
-<h3>Confira a etiqueta (Expositor)</h3>
+<a class="voltar-botao" href="/expositor">← Voltar</a>
+
+<div class="pagina-cabecalho">
+    <h3>Confira a etiqueta (Expositor)</h3>
+</div>
 
 <button @onclick="Conectar">🖨️ Conectar impressora</button>
 @if (!string.IsNullOrEmpty(statusConexao))
 {
-    <p><em>@statusConexao</em></p>
+    <p class="aviso">@statusConexao</p>
 }
 
 @if (produto is null)
@@ -21,11 +24,11 @@
 }
 else if (sucesso)
 {
-    <p>✅ Etiqueta impressa!</p>
+    <p class="aviso">✅ Etiqueta impressa!</p>
 }
 else
 {
-    <div>
+    <div class="secao">
         <p><strong>Produto:</strong> @produto.Nome</p>
         <p><strong>Preço:</strong> @(produto.Preco.HasValue ? $"{produto.Preco:C}/{produto.Unidade}" : "não informado")</p>
         <p><strong>Fabricação:</strong> @fabricacao.ToString("dd/MM/yyyy")</p>
@@ -33,13 +36,13 @@ else
         <p><strong>Met. Armazenagem:</strong> @produto.MetodoArmazenagem</p>
     </div>
 
-    <button @onclick="Imprimir" disabled="@imprimindo">
+    <button class="principal" @onclick="Imprimir" disabled="@imprimindo">
         @(imprimindo ? "Imprimindo..." : "Imprimir etiqueta")
     </button>
 
     @if (!string.IsNullOrEmpty(statusImpressao))
     {
-        <p><em>@statusImpressao</em></p>
+        <p class="aviso">@statusImpressao</p>
     }
 }
 
@@ -79,10 +82,17 @@ else
     private async Task Imprimir()
     {
         imprimindo = true;
-        var zpl = ZplBuilder.EtiquetaExpositor(produto!.Nome, produto.Preco, produto.Unidade, fabricacao, vencimento, produto.MetodoArmazenagem);        try
+        var zpl = ZplBuilder.EtiquetaExpositor(
+            produto!.Nome,
+            produto.Preco,
+            produto.Unidade,
+            fabricacao,
+            vencimento,
+            produto.MetodoArmazenagem);
+
+        try
         {
             await Impressora.ImprimirAsync(zpl);
-
             var request = new { ProdutoId, FuncionarioId = (Guid?)null, Tipo = 1 };
             var response = await Http.PostAsJsonAsync("impressoes", request);
 

@@ -6,13 +6,16 @@
 @using Prontag.Tablet.Services
 @using System.Net.Http.Json
 
-<a href="/produto">&lt; Voltar</a>
-<h3>Confira a etiqueta</h3>
+<a class="voltar-botao" href="/produto">← Voltar</a>
+
+<div class="pagina-cabecalho">
+    <h3>Confira a etiqueta</h3>
+</div>
 
 <button @onclick="Conectar">🖨️ Conectar impressora</button>
 @if (!string.IsNullOrEmpty(statusConexao))
 {
-    <p><em>@statusConexao</em></p>
+    <p class="aviso">@statusConexao</p>
 }
 
 @if (produto is null || funcionario is null)
@@ -21,25 +24,25 @@
 }
 else if (sucesso)
 {
-    <p>✅ Etiqueta impressa!</p>
+    <p class="aviso">✅ Etiqueta impressa!</p>
 }
 else
 {
-    <div>
+    <div class="secao">
         <p><strong>Produto:</strong> @produto.Nome</p>
         <p><strong>Fabricação:</strong> @fabricacao.ToString("dd/MM/yyyy")</p>
         <p><strong>Vencimento:</strong> @vencimento.ToString("dd/MM/yyyy")</p>
-        <p><strong>Responsável:</strong> @funcionario.Nome</p>
         <p><strong>Met. Armazenagem:</strong> @produto.MetodoArmazenagem</p>
+        <p><strong>Responsável:</strong> @funcionario.Nome</p>
     </div>
 
-    <button @onclick="Imprimir" disabled="@imprimindo">
+    <button class="principal" @onclick="Imprimir" disabled="@imprimindo">
         @(imprimindo ? "Imprimindo..." : "Imprimir etiqueta")
     </button>
 
     @if (!string.IsNullOrEmpty(statusImpressao))
     {
-        <p><em>@statusImpressao</em></p>
+        <p class="aviso">@statusImpressao</p>
     }
 }
 
@@ -84,7 +87,13 @@ else
     private async Task Imprimir()
     {
         imprimindo = true;
-        var zpl = ZplBuilder.EtiquetaProduto(produto!.Nome, fabricacao, vencimento, funcionario!.Nome, produto.MetodoArmazenagem);
+        var zpl = ZplBuilder.EtiquetaProduto(
+            produto!.Nome,
+            fabricacao,
+            vencimento,
+            funcionario!.Nome,
+            produto.MetodoArmazenagem);
+
         try
         {
             await Impressora.ImprimirAsync(zpl);
