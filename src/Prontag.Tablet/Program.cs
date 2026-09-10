@@ -8,7 +8,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://prontag-api.onrender.com")
+    BaseAddress = new Uri("https://api.prontag.app")
 });
 
 builder.Services.AddScoped<Prontag.Tablet.Services.ImpressoraService>();
