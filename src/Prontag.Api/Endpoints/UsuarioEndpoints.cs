@@ -20,7 +20,7 @@ public static class UsuarioEndpoints
         grupo.MapGet("/", async (ProntagDbContext db) =>
             await db.Usuarios
                 .Where(u => u.Ativo)
-                .Select(u => new { u.Id, u.Nome, u.Login, u.Papel })
+                .Select(u => new { u.Id, u.Nome, u.Login, u.Papel, u.PedidoRedefinicao, u.PedidoRedefinicaoEm })
                 .ToListAsync());
 
         grupo.MapPost("/", async (CriarUsuarioRequest req, ITenantProvider tenant, ProntagDbContext db) =>
@@ -47,6 +47,22 @@ public static class UsuarioEndpoints
             return Results.Created($"/usuarios/{usuario.Id}", new { usuario.Id, usuario.Nome, usuario.Login, usuario.Papel });
         });
 
+        grupo.MapPost("/{id:guid}/redefinir-senha", async (Guid id, string novaSenha, ProntagDbContext db) =>
+        {
+            if (!RegraSenha.IsMatch(novaSenha))
+                return Results.BadRequest("Senha precisa ter pelo menos 4 números e 1 letra.");
+
+            var usuario = await db.Usuarios.FindAsync(id);
+            if (usuario is null) return Results.NotFound();
+
+            usuario.SenhaHash = Hasher.HashPassword(usuario, novaSenha);
+            usuario.PedidoRedefinicao = false;
+            usuario.PedidoRedefinicaoEm = null;
+            await db.SaveChangesAsync();
+
+            return Results.NoContent();
+        });
+
         grupo.MapDelete("/{id:guid}", async (Guid id, ProntagDbContext db) =>
         {
             var usuario = await db.Usuarios.FindAsync(id);
@@ -55,27 +71,5 @@ public static class UsuarioEndpoints
             await db.SaveChangesAsync();
             return Results.NoContent();
         });
-
-        grupo.MapGet("/", async (ProntagDbContext db) =>
-    await db.Usuarios
-        .Where(u => u.Ativo)
-        .Select(u => new { u.Id, u.Nome, u.Login, u.Papel, u.PedidoRedefinicao, u.PedidoRedefinicaoEm })
-        .ToListAsync());
-
-        grupo.MapPost("/{id:guid}/redefinir-senha", async (Guid id, string novaSenha, ProntagDbContext db) =>
-{
-    if (!RegraSenha.IsMatch(novaSenha))
-        return Results.BadRequest("Senha precisa ter pelo menos 4 números e 1 letra.");
-
-    var usuario = await db.Usuarios.FindAsync(id);
-    if (usuario is null) return Results.NotFound();
-
-    usuario.SenhaHash = Hasher.HashPassword(usuario, novaSenha);
-    usuario.PedidoRedefinicao = false;
-    usuario.PedidoRedefinicaoEm = null;
-    await db.SaveChangesAsync();
-
-    return Results.NoContent();
-});
     }
 }
