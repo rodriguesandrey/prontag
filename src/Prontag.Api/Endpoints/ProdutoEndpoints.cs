@@ -49,8 +49,9 @@ public static class ProdutoEndpoints
             produto.Preco = atualizacao.Preco;
             produto.Icone = atualizacao.Icone;
             produto.UsadoEmProdutos = atualizacao.UsadoEmProdutos;
-produto.UsadoEmExpositor = atualizacao.UsadoEmExpositor;
-produto.Unidade = atualizacao.Unidade;
+            produto.UsadoEmExpositor = atualizacao.UsadoEmExpositor;
+            produto.Unidade = atualizacao.Unidade;
+            produto.MetodoArmazenagem = atualizacao.MetodoArmazenagem;
 
             if (funcionarioId.HasValue)
             {

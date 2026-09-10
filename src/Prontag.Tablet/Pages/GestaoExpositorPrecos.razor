@@ -7,7 +7,7 @@
 
 <div class="pagina-cabecalho">
     <h3>Etiquetas expositor</h3>
-    <p>Itens vendidos no expositor — nome, validade, preço e unidade.</p>
+    <p>Itens vendidos no expositor — nome, validade, preço, unidade e armazenagem.</p>
 </div>
 
 <div class="secao">
@@ -21,6 +21,14 @@
             <option value="kg">Quilo (kg)</option>
             <option value="un">Unidade</option>
             <option value="g">Grama (g)</option>
+        </select>
+    </div>
+    <div class="campo">
+        <label>Método de armazenagem</label>
+        <select @bind="novoMetodoArmazenagem">
+            <option value="Temp. Ambiente">Temp. Ambiente</option>
+            <option value="Geladeira">Geladeira</option>
+            <option value="Freezer">Freezer</option>
         </select>
     </div>
     <button class="principal" @onclick="Cadastrar" disabled="@salvando">
@@ -41,7 +49,16 @@
     else
     {
         <table>
-            <thead><tr><th>Produto</th><th>Dias</th><th>Preço</th><th>Unidade</th><th></th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Dias</th>
+                    <th>Preço</th>
+                    <th>Unidade</th>
+                    <th>Armazenagem</th>
+                    <th></th>
+                </tr>
+            </thead>
             <tbody>
                 @foreach (var p in produtos)
                 {
@@ -54,6 +71,13 @@
                                 <option value="kg">kg</option>
                                 <option value="un">un</option>
                                 <option value="g">g</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select @bind="armazenagens[p.Id]" style="max-width:150px">
+                                <option value="Temp. Ambiente">Temp. Ambiente</option>
+                                <option value="Geladeira">Geladeira</option>
+                                <option value="Freezer">Freezer</option>
                             </select>
                         </td>
                         <td><button class="principal" @onclick="() => SalvarItem(p)" disabled="@(salvandoId == p.Id)">Salvar</button></td>
@@ -69,11 +93,14 @@
     private Dictionary<Guid, decimal?> precos = new();
     private Dictionary<Guid, int> dias = new();
     private Dictionary<Guid, string> unidades = new();
+    private Dictionary<Guid, string> armazenagens = new();
     private Guid? salvandoId;
+
     private string novoNome = "";
     private int novoDiasValidade;
     private decimal? novoPreco;
     private string novaUnidade = "kg";
+    private string novoMetodoArmazenagem = "Temp. Ambiente";
     private bool salvando;
     private string? mensagem;
 
@@ -89,6 +116,7 @@
                 precos[p.Id] = p.Preco;
                 dias[p.Id] = p.DiasValidade;
                 unidades[p.Id] = p.Unidade;
+                armazenagens[p.Id] = p.MetodoArmazenagem;
             }
         }
     }
@@ -109,7 +137,8 @@
             Preco = novoPreco,
             UsadoEmProdutos = false,
             UsadoEmExpositor = true,
-            Unidade = novaUnidade
+            Unidade = novaUnidade,
+            MetodoArmazenagem = novoMetodoArmazenagem
         };
         var resposta = await Http.PostAsJsonAsync("produtos", dados);
 
@@ -119,6 +148,8 @@
             novoNome = "";
             novoDiasValidade = 0;
             novoPreco = null;
+            novaUnidade = "kg";
+            novoMetodoArmazenagem = "Temp. Ambiente";
             await Carregar();
         }
         else
@@ -139,7 +170,8 @@
             Icone = produto.Icone,
             UsadoEmProdutos = produto.UsadoEmProdutos,
             UsadoEmExpositor = true,
-            Unidade = unidades[produto.Id]
+            Unidade = unidades[produto.Id],
+            MetodoArmazenagem = armazenagens[produto.Id]
         };
         var resposta = await Http.PutAsJsonAsync($"produtos/{produto.Id}", dados);
 

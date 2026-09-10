@@ -11,4 +11,5 @@ public class Produto : BaseEntity, ITenantEntity
     public bool UsadoEmProdutos { get; set; } = true;
 public bool UsadoEmExpositor { get; set; }
 public string Unidade { get; set; } = "kg";
+public string MetodoArmazenagem { get; set; } = "Temp. Ambiente"; // "Temp. Ambiente" | "Geladeira" | "Freezer"
 }

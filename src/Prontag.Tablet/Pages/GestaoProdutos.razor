@@ -7,13 +7,21 @@
 
 <div class="pagina-cabecalho">
     <h3>Etiquetas produtos</h3>
-    <p>Produtos de uso interno — nome e dias de validade.</p>
+    <p>Produtos de uso interno — nome, validade e armazenagem.</p>
 </div>
 
 <div class="secao">
     <p class="secao-titulo">@(editandoId is null ? "Novo produto" : "Editando produto")</p>
     <div class="campo"><label>Nome</label><input @bind="nome" /></div>
     <div class="campo"><label>Dias de validade</label><input type="number" @bind="diasValidade" /></div>
+    <div class="campo">
+        <label>Método de armazenagem</label>
+        <select @bind="metodoArmazenagemAtual">
+            <option value="Temp. Ambiente">Temp. Ambiente</option>
+            <option value="Geladeira">Geladeira</option>
+            <option value="Freezer">Freezer</option>
+        </select>
+    </div>
     <button class="principal" @onclick="Salvar" disabled="@salvando">
         @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar produto" : "Salvar edição")
     </button>
@@ -36,13 +44,14 @@
     else
     {
         <table>
-            <thead><tr><th>Nome</th><th>Dias</th><th></th></tr></thead>
+            <thead><tr><th>Nome</th><th>Dias</th><th>Armazenagem</th><th></th></tr></thead>
             <tbody>
                 @foreach (var p in produtos)
                 {
                     <tr>
                         <td>@p.Nome</td>
                         <td>@p.DiasValidade</td>
+                        <td>@p.MetodoArmazenagem</td>
                         <td>
                             <button @onclick="() => EditarClique(p)">Editar</button>
                             <button @onclick="() => RemoverClique(p)">Remover</button>
@@ -63,6 +72,7 @@
     private string? iconeAtual;
     private bool usadoEmExpositorAtual;
     private string unidadeAtual = "kg";
+    private string metodoArmazenagemAtual = "Temp. Ambiente";
     private bool salvando;
     private string? mensagem;
 
@@ -82,6 +92,7 @@
         iconeAtual = produto.Icone;
         usadoEmExpositorAtual = produto.UsadoEmExpositor;
         unidadeAtual = produto.Unidade;
+        metodoArmazenagemAtual = produto.MetodoArmazenagem;
         mensagem = null;
     }
 
@@ -94,6 +105,7 @@
         iconeAtual = null;
         usadoEmExpositorAtual = false;
         unidadeAtual = "kg";
+        metodoArmazenagemAtual = "Temp. Ambiente";
     }
 
     private async Task Salvar()
@@ -113,7 +125,8 @@
             Icone = iconeAtual,
             UsadoEmProdutos = true,
             UsadoEmExpositor = usadoEmExpositorAtual,
-            Unidade = unidadeAtual
+            Unidade = unidadeAtual,
+            MetodoArmazenagem = metodoArmazenagemAtual
         };
 
         HttpResponseMessage response = editandoId is null

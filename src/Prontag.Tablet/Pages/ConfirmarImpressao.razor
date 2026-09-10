@@ -30,6 +30,7 @@ else
         <p><strong>Fabricação:</strong> @fabricacao.ToString("dd/MM/yyyy")</p>
         <p><strong>Vencimento:</strong> @vencimento.ToString("dd/MM/yyyy")</p>
         <p><strong>Responsável:</strong> @funcionario.Nome</p>
+        <p><strong>Met. Armazenagem:</strong> @produto.MetodoArmazenagem</p>
     </div>
 
     <button @onclick="Imprimir" disabled="@imprimindo">
@@ -83,8 +84,7 @@ else
     private async Task Imprimir()
     {
         imprimindo = true;
-        var zpl = ZplBuilder.EtiquetaProduto(produto!.Nome, fabricacao, vencimento, funcionario!.Nome);
-
+        var zpl = ZplBuilder.EtiquetaProduto(produto!.Nome, fabricacao, vencimento, funcionario!.Nome, produto.MetodoArmazenagem);
         try
         {
             await Impressora.ImprimirAsync(zpl);

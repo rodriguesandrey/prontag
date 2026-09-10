@@ -30,6 +30,7 @@ else
         <p><strong>Preço:</strong> @(produto.Preco.HasValue ? $"{produto.Preco:C}/{produto.Unidade}" : "não informado")</p>
         <p><strong>Fabricação:</strong> @fabricacao.ToString("dd/MM/yyyy")</p>
         <p><strong>Vencimento:</strong> @vencimento.ToString("dd/MM/yyyy")</p>
+        <p><strong>Met. Armazenagem:</strong> @produto.MetodoArmazenagem</p>
     </div>
 
     <button @onclick="Imprimir" disabled="@imprimindo">
@@ -78,8 +79,7 @@ else
     private async Task Imprimir()
     {
         imprimindo = true;
-var zpl = ZplBuilder.EtiquetaExpositor(produto!.Nome, produto.Preco, produto.Unidade, fabricacao, vencimento);
-        try
+        var zpl = ZplBuilder.EtiquetaExpositor(produto!.Nome, produto.Preco, produto.Unidade, fabricacao, vencimento, produto.MetodoArmazenagem);        try
         {
             await Impressora.ImprimirAsync(zpl);
 
