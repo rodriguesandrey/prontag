@@ -315,3 +315,42 @@ th, td { padding: 8px 12px; }
 }
 
 .hero p { max-width: none; }
+
+.tela-login {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(320px, 480px) 1fr;
+}
+@media (max-width: 860px) {
+    .tela-login { grid-template-columns: 1fr; }
+    .login-painel { display: none; }
+}
+
+.login-form-lado {
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-painel {
+    background-color: #171B22;
+    background-image:
+        linear-gradient(160deg, rgba(242,166,58,0.14) 0%, transparent 60%),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 14px);
+    border-left: 1px solid var(--cor-borda);
+    padding: 60px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+}
+.login-painel h2 { font-size: 1.6rem; max-width: 380px; }
+.login-destaque {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+.login-destaque .cartao-icone { flex-shrink: 0; }
+.login-destaque h4 { margin: 0 0 4px; font-size: 0.98rem; }
+.login-destaque p { margin: 0; font-size: 0.85rem; color: var(--cor-texto-suave); max-width: 320px; }

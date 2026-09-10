@@ -1,44 +1,75 @@
 @page "/login"
 @inject Prontag.Tablet.Services.AuthService Auth
-@inject HttpClient Http
 @inject NavigationManager Nav
-@using System.Net.Http.Json
 
-<div class="hero">
-    <span class="selo">Prontag</span>
-    <h1>Entrar</h1>
-</div>
+<div class="tela-login">
+    <div class="login-form-lado">
+        <div class="marca">
+            <span class="marca-icone">P</span>
+            <span class="marca-texto">Pront<span class="marca-destaque">ag</span></span>
+        </div>
 
-@if (modoRecuperacao)
-{
-    <div><label>Login: <input @bind="login" /></label></div>
-    <button class="principal" @onclick="PedirRecuperacao" disabled="@enviando">
-        @(enviando ? "Enviando..." : "Solicitar redefinição")
-    </button>
-    <button @onclick="() => modoRecuperacao = false">Voltar pro login</button>
-}
-else
-{
-    <div><label>Login: <input @bind="login" /></label></div>
-    <div>
-        <label>Senha:
-            <input type="@(mostrarSenha ? "text" : "password")" @bind="senha" />
-        </label>
-        <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.85rem;">
-            <input type="checkbox" style="width:auto" @bind="mostrarSenha" /> Mostrar senha
-        </label>
+        <span class="selo">Prontag</span>
+        <h1 style="margin:8px 0 24px;">Entrar</h1>
+
+        @if (modoRecuperacao)
+        {
+            <div class="campo"><label>Login</label><input @bind="login" /></div>
+            <button class="principal" @onclick="PedirRecuperacao" disabled="@enviando">
+                @(enviando ? "Enviando..." : "Solicitar redefinição")
+            </button>
+            <button @onclick="() => modoRecuperacao = false">Voltar pro login</button>
+        }
+        else
+        {
+            <div class="campo"><label>Login</label><input @bind="login" /></div>
+            <div class="campo">
+                <label>Senha</label>
+                <input type="@(mostrarSenha ? "text" : "password")" @bind="senha" />
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.8rem; text-transform:none; font-weight:400; margin-top:6px;">
+                    <input type="checkbox" style="width:auto" @bind="mostrarSenha" /> Mostrar senha
+                </label>
+            </div>
+
+            <button class="principal" @onclick="Entrar" disabled="@entrando">
+                @(entrando ? "Entrando..." : "Entrar")
+            </button>
+            <button @onclick="() => modoRecuperacao = true">Esqueci minha senha</button>
+        }
+
+        @if (!string.IsNullOrEmpty(mensagem))
+        {
+            <p class="aviso">@mensagem</p>
+        }
     </div>
 
-    <button class="principal" @onclick="Entrar" disabled="@entrando">
-        @(entrando ? "Entrando..." : "Entrar")
-    </button>
-    <button @onclick="() => modoRecuperacao = true">Esqueci minha senha</button>
-}
+    <div class="login-painel">
+        <span class="selo">Emissão de etiquetas para áreas de produção</span>
+        <h2>Etiquetas prontas. Produção em dia.</h2>
 
-@if (!string.IsNullOrEmpty(mensagem))
-{
-    <p class="aviso">@mensagem</p>
-}
+        <div class="login-destaque">
+            <div class="cartao-icone icone-a">🏷️</div>
+            <div>
+                <h4>Controle de validade automático</h4>
+                <p>Fabricação e vencimento calculados na hora, sem planilha.</p>
+            </div>
+        </div>
+        <div class="login-destaque">
+            <div class="cartao-icone icone-b">🛒</div>
+            <div>
+                <h4>Etiquetas do expositor</h4>
+                <p>Preço, unidade e validade prontos pro autosserviço.</p>
+            </div>
+        </div>
+        <div class="login-destaque">
+            <div class="cartao-icone icone-c">⚙️</div>
+            <div>
+                <h4>Gestão simples</h4>
+                <p>Cadastro de produtos, funcionários e relatórios por período.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     private string login = "";
@@ -61,7 +92,8 @@ else
     private async Task PedirRecuperacao()
     {
         enviando = true;
-        var resposta = await Http.PostAsJsonAsync("auth/esqueci-senha", new { Login = login, Senha = "" });
+        var http = new HttpClient { BaseAddress = new Uri("https://api.prontag.app") };
+        var resposta = await http.PostAsJsonAsync("auth/esqueci-senha", new { Login = login, Senha = "" });
         mensagem = resposta.IsSuccessStatusCode
             ? "Pedido enviado! Fale com o administrador pra liberar seu acesso."
             : "Login não encontrado.";
