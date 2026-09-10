@@ -3,16 +3,26 @@
 @inject NavigationManager Nav
 
 <div class="app-container">
-    <div class="marca">
-        <span class="marca-icone">P</span>
-        <span class="marca-texto">Pront<span class="marca-destaque">ag</span></span>
+    <div class="nav-superior">
+        <div class="marca">
+            <span class="marca-icone">P</span>
+            <span class="marca-texto">Pront<span class="marca-destaque">ag</span></span>
+        </div>
+        @if (Auth.Autenticado)
+        {
+            <div class="nav-acoes">
+                <span>@Auth.Nome</span>
+                <a href="/">Início</a>
+                <button @onclick="Sair">Sair</button>
+            </div>
+        }
     </div>
 
     @if (!pronto)
     {
         <p>Carregando...</p>
     }
-    else if (!Auth.Autenticado && Nav.Uri.EndsWith("/login") == false)
+    else if (!Auth.Autenticado && !Nav.Uri.EndsWith("/login"))
     {
         <p>Redirecionando para login...</p>
     }
@@ -34,5 +44,11 @@
         {
             Nav.NavigateTo("/login");
         }
+    }
+
+    private async Task Sair()
+    {
+        await Auth.LogoutAsync();
+        Nav.NavigateTo("/login");
     }
 }

@@ -69,6 +69,11 @@ else
 
         fabricacao = DateOnly.FromDateTime(DateTime.Now);
         vencimento = fabricacao.AddDays(produto?.DiasValidade ?? 0);
+        var nomeReconectado = await Impressora.ReconectarSilenciosamenteAsync();
+if (nomeReconectado is not null)
+{
+    statusConexao = $"Conectado: {nomeReconectado}";
+}
     }
 
     private async Task Conectar()

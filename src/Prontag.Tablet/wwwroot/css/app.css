@@ -250,3 +250,43 @@ tbody tr:last-child td { border-bottom: none; }
 }
 .loading-progress-text { text-align: center; font-family: var(--fonte-corpo); color: var(--cor-texto-suave); }
 .loading-progress-text::after { content: "Carregando"; }
+
+.nav-superior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+.marca-icone { width: 42px; height: 42px; font-size: 1.3rem; }
+.marca-texto { font-size: 1.5rem; }
+
+.nav-acoes { display: flex; align-items: center; gap: 10px; }
+.nav-acoes a, .nav-acoes button {
+    font-family: var(--fonte-corpo);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--cor-texto-suave);
+    background: transparent;
+    border: none;
+    padding: 6px 4px;
+    margin: 0;
+    cursor: pointer;
+}
+.nav-acoes a:hover, .nav-acoes button:hover { color: var(--cor-texto); text-decoration: none; }
+
+.voltar-botao {
+    font-weight: 700;
+    background: var(--cor-superficie-alt);
+    border: 1px solid var(--cor-destaque);
+    color: var(--cor-destaque);
+    padding: 9px 18px;
+}
+.voltar-botao:hover { background: var(--cor-destaque); color: #14181F; }
+
+.campo { margin-bottom: 10px; }
+.secao { padding-top: 16px; margin-top: 18px; }
+.linha-campos { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+.linha-campos .campo { flex: 1; min-width: 160px; margin-bottom: 0; }
+
+table { margin-top: 0; }
+th, td { padding: 8px 12px; }

@@ -18,6 +18,12 @@ public class ImpressoraService : IAsyncDisposable
         return await module.InvokeAsync<string>("conectar");
     }
 
+    public async Task<string?> ReconectarSilenciosamenteAsync()
+    {
+        var module = await _moduleTask.Value;
+        return await module.InvokeAsync<string?>("reconectarSilenciosamente");
+    }
+
     public async Task ImprimirAsync(string zpl)
     {
         var module = await _moduleTask.Value;
