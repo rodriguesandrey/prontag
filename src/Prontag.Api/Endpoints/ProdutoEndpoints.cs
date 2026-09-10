@@ -10,8 +10,13 @@ public static class ProdutoEndpoints
     {
         var grupo = app.MapGroup("/produtos");
 
-        grupo.MapGet("/", async (ProntagDbContext db) =>
-            await db.Produtos.Where(p => p.Ativo).ToListAsync());
+        grupo.MapGet("/", async (string? contexto, ProntagDbContext db) =>
+{
+    var query = db.Produtos.Where(p => p.Ativo);
+    if (contexto == "produtos") query = query.Where(p => p.UsadoEmProdutos);
+    else if (contexto == "expositor") query = query.Where(p => p.UsadoEmExpositor);
+    return await query.ToListAsync();
+});
 
         grupo.MapPost("/", async (Produto produto, Guid? funcionarioId, ITenantProvider tenant, ProntagDbContext db) =>
         {
@@ -43,6 +48,9 @@ public static class ProdutoEndpoints
             produto.DiasValidade = atualizacao.DiasValidade;
             produto.Preco = atualizacao.Preco;
             produto.Icone = atualizacao.Icone;
+            produto.UsadoEmProdutos = atualizacao.UsadoEmProdutos;
+produto.UsadoEmExpositor = atualizacao.UsadoEmExpositor;
+produto.Unidade = atualizacao.Unidade;
 
             if (funcionarioId.HasValue)
             {

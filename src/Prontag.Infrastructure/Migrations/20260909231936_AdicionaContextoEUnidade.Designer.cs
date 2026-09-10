@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Prontag.Infrastructure;
@@ -11,9 +12,11 @@ using Prontag.Infrastructure;
 namespace Prontag.Infrastructure.Migrations
 {
     [DbContext(typeof(ProntagDbContext))]
-    partial class ProntagDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260909231936_AdicionaContextoEUnidade")]
+    partial class AdicionaContextoEUnidade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

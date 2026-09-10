@@ -25,8 +25,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos");
-    }
+produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos?contexto=expositor");    }
 
     private void Selecionar(Produto produto)
     {

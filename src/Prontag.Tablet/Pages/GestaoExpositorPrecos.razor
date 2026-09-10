@@ -7,13 +7,22 @@
 
 <div class="pagina-cabecalho">
     <h3>Etiquetas expositor</h3>
-    <p>Cadastre itens e defina o preço de cada um.</p>
+    <p>Itens vendidos no expositor — nome, validade, preço e unidade.</p>
 </div>
 
 <div class="secao">
     <p class="secao-titulo">Novo item do expositor</p>
     <div class="campo"><label>Nome</label><input @bind="novoNome" /></div>
+    <div class="campo"><label>Dias de validade</label><input type="number" @bind="novoDiasValidade" /></div>
     <div class="campo"><label>Preço</label><input type="number" step="0.01" @bind="novoPreco" /></div>
+    <div class="campo">
+        <label>Unidade</label>
+        <select @bind="novaUnidade">
+            <option value="kg">Quilo (kg)</option>
+            <option value="un">Unidade</option>
+            <option value="g">Grama (g)</option>
+        </select>
+    </div>
     <button class="principal" @onclick="Cadastrar" disabled="@salvando">
         @(salvando ? "Salvando..." : "Cadastrar item")
     </button>
@@ -32,14 +41,22 @@
     else
     {
         <table>
-            <thead><tr><th>Produto</th><th>Preço</th><th></th></tr></thead>
+            <thead><tr><th>Produto</th><th>Dias</th><th>Preço</th><th>Unidade</th><th></th></tr></thead>
             <tbody>
                 @foreach (var p in produtos)
                 {
                     <tr>
                         <td>@p.Nome</td>
+                        <td><input type="number" @bind="dias[p.Id]" style="max-width:80px" /></td>
                         <td><input type="number" step="0.01" @bind="precos[p.Id]" style="max-width:120px" /></td>
-                        <td><button class="principal" @onclick="() => SalvarPreco(p)" disabled="@(salvandoId == p.Id)">Salvar</button></td>
+                        <td>
+                            <select @bind="unidades[p.Id]" style="max-width:110px">
+                                <option value="kg">kg</option>
+                                <option value="un">un</option>
+                                <option value="g">g</option>
+                            </select>
+                        </td>
+                        <td><button class="principal" @onclick="() => SalvarItem(p)" disabled="@(salvandoId == p.Id)">Salvar</button></td>
                     </tr>
                 }
             </tbody>
@@ -50,9 +67,13 @@
 @code {
     private List<Produto>? produtos;
     private Dictionary<Guid, decimal?> precos = new();
+    private Dictionary<Guid, int> dias = new();
+    private Dictionary<Guid, string> unidades = new();
     private Guid? salvandoId;
     private string novoNome = "";
+    private int novoDiasValidade;
     private decimal? novoPreco;
+    private string novaUnidade = "kg";
     private bool salvando;
     private string? mensagem;
 
@@ -60,10 +81,15 @@
 
     private async Task Carregar()
     {
-        produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos");
+        produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos?contexto=expositor");
         if (produtos is not null)
         {
-            foreach (var p in produtos) precos[p.Id] = p.Preco;
+            foreach (var p in produtos)
+            {
+                precos[p.Id] = p.Preco;
+                dias[p.Id] = p.DiasValidade;
+                unidades[p.Id] = p.Unidade;
+            }
         }
     }
 
@@ -76,13 +102,22 @@
         }
 
         salvando = true;
-        var dados = new { Nome = novoNome, DiasValidade = 0, Preco = novoPreco };
+        var dados = new
+        {
+            Nome = novoNome,
+            DiasValidade = novoDiasValidade,
+            Preco = novoPreco,
+            UsadoEmProdutos = false,
+            UsadoEmExpositor = true,
+            Unidade = novaUnidade
+        };
         var resposta = await Http.PostAsJsonAsync("produtos", dados);
 
         if (resposta.IsSuccessStatusCode)
         {
             mensagem = $"Item \"{novoNome}\" cadastrado!";
             novoNome = "";
+            novoDiasValidade = 0;
             novoPreco = null;
             await Carregar();
         }
@@ -93,14 +128,23 @@
         salvando = false;
     }
 
-    private async Task SalvarPreco(Produto produto)
+    private async Task SalvarItem(Produto produto)
     {
         salvandoId = produto.Id;
-        var dados = new { Nome = produto.Nome, DiasValidade = produto.DiasValidade, Preco = precos[produto.Id], Icone = produto.Icone };
+        var dados = new
+        {
+            Nome = produto.Nome,
+            DiasValidade = dias[produto.Id],
+            Preco = precos[produto.Id],
+            Icone = produto.Icone,
+            UsadoEmProdutos = produto.UsadoEmProdutos,
+            UsadoEmExpositor = true,
+            Unidade = unidades[produto.Id]
+        };
         var resposta = await Http.PutAsJsonAsync($"produtos/{produto.Id}", dados);
 
         mensagem = resposta.IsSuccessStatusCode
-            ? $"Preço de \"{produto.Nome}\" atualizado!"
+            ? $"\"{produto.Nome}\" atualizado!"
             : $"Erro ao atualizar \"{produto.Nome}\".";
         salvandoId = null;
     }
