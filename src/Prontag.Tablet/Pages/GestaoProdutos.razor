@@ -12,15 +12,17 @@
 
 <div class="secao">
     <p class="secao-titulo">@(editandoId is null ? "Novo produto" : "Editando produto")</p>
-    <div class="campo"><label>Nome</label><input @bind="nome" /></div>
-    <div class="campo"><label>Dias de validade</label><input type="number" @bind="diasValidade" /></div>
-    <div class="campo">
-        <label>Método de armazenagem</label>
-        <select @bind="metodoArmazenagemAtual">
-            <option value="Temp. Ambiente">Temp. Ambiente</option>
-            <option value="Geladeira">Geladeira</option>
-            <option value="Freezer">Freezer</option>
-        </select>
+    <div class="linha-campos">
+        <div class="campo"><label>Nome</label><input @bind="nome" /></div>
+        <div class="campo"><label>Dias de validade</label><input type="number" @bind="diasValidade" /></div>
+        <div class="campo">
+            <label>Método de armazenagem</label>
+            <select @bind="metodoArmazenagemAtual">
+                <option value="Temp. Ambiente">Temp. Ambiente</option>
+                <option value="Geladeira">Geladeira</option>
+                <option value="Freezer">Freezer</option>
+            </select>
+        </div>
     </div>
     <button class="principal" @onclick="Salvar" disabled="@salvando">
         @(salvando ? "Salvando..." : editandoId is null ? "Cadastrar produto" : "Salvar edição")
