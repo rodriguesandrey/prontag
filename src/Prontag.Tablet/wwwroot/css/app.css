@@ -381,3 +381,18 @@ table button.principal {
     padding: 5px 12px !important;
     font-size: 0.82rem !important;
 }
+
+table th, table td { padding: 3px 10px; }
+table input, table select, table button.principal {
+    height: 30px !important;
+    padding: 0 10px !important;
+    font-size: 0.8rem !important;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+}
+table button.principal {
+    background: #FF3B9A !important;
+    border-color: #FF3B9A !important;
+    color: #14181F !important;
+}
