@@ -364,3 +364,9 @@ th, td { padding: 5px 10px; }
 .login-destaque .cartao-icone { flex-shrink: 0; }
 .login-destaque h4 { margin: 0 0 4px; font-size: 0.98rem; }
 .login-destaque p { margin: 0; font-size: 0.85rem; color: var(--cor-texto-suave); max-width: 320px; }
+
+table input, table select {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+}
+tbody tr { line-height: 1.2; }
