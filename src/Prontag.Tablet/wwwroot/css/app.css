@@ -215,7 +215,7 @@ table {
     overflow: hidden;
 }
 thead tr { background: var(--cor-superficie-alt); }
-th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--cor-borda); font-size: 0.9rem; }
+th, td { text-align: left; padding: 5px 10px; border-bottom: 1px solid var(--cor-borda); font-size: 0.9rem; }
 th {
     color: var(--cor-texto-suave);
     font-weight: 700;
@@ -289,7 +289,7 @@ tbody tr:last-child td { border-bottom: none; }
 .linha-campos .campo { flex: 1; min-width: 160px; margin-bottom: 0; }
 
 table { margin-top: 0; } table input, table select { padding: 5px 8px; }
-th, td { padding: 8px 12px; }
+th, td { padding: 5px 10px; }
 
 .zona {
     min-height: 100vh;
