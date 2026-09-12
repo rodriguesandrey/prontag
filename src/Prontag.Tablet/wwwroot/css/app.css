@@ -288,7 +288,7 @@ tbody tr:last-child td { border-bottom: none; }
 .linha-campos { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
 .linha-campos .campo { flex: 1; min-width: 160px; margin-bottom: 0; }
 
-table { margin-top: 0; }
+table { margin-top: 0; } table input, table select { padding: 5px 8px; }
 th, td { padding: 8px 12px; }
 
 .zona {
