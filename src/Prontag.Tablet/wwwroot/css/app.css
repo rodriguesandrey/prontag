@@ -376,3 +376,8 @@ table button {
     font-size: 0.82rem;
     margin: 0;
 }
+
+table button.principal {
+    padding: 5px 12px !important;
+    font-size: 0.82rem !important;
+}
