@@ -370,3 +370,9 @@ table input, table select {
     font-size: 0.85rem;
 }
 tbody tr { line-height: 1.2; }
+
+table button {
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    margin: 0;
+}
