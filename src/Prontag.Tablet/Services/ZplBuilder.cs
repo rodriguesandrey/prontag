@@ -11,11 +11,11 @@ public static class ZplBuilder
                "^MD14\n" +
                "^PW320\n" +
                "^LL320\n" +
-               $"^FO20,35^FB280,2,0,L,0^A0N,36,36^FD{produtoNome.ToUpper()}^FS\n" +
-               $"^FO20,135^A0N,30,30^FDFab: {fabricacao:dd/MM/yyyy}^FS\n" +
-               $"^FO20,175^A0N,30,30^FDVenc: {vencimento:dd/MM/yyyy}^FS\n" +
-               $"^FO20,215^A0N,22,22^FDArmaz: {metodoArmazenagem}^FS\n" +
-               $"^FO20,245^A0N,22,22^FDResp: {funcionarioNome}^FS\n" +
+               $"^FO10,35^FB300,2,0,C,0^A0N,28,28^FD{produtoNome.ToUpper()}^FS\n" +
+               $"^FO20,120^A0N,30,30^FDFab: {fabricacao:dd/MM/yyyy}^FS\n" +
+               $"^FO20,160^A0N,30,30^FDVenc: {vencimento:dd/MM/yyyy}^FS\n" +
+               $"^FO20,200^A0N,22,22^FDArmaz: {metodoArmazenagem}^FS\n" +
+               $"^FO20,230^A0N,22,22^FDResp: {funcionarioNome}^FS\n" +
                "^XZ\n";
     }
 
@@ -30,11 +30,11 @@ public static class ZplBuilder
                "^MD14\n" +
                "^PW320\n" +
                "^LL320\n" +
-               $"^FO20,35^FB280,2,0,L,0^A0N,36,36^FD{produtoNome.ToUpper()}^FS\n" +
-               $"^FO20,135^A0N,40,40^FD{precoTexto}^FS\n" +
-               $"^FO20,195^A0N,26,26^FDFab: {fabricacao:dd/MM/yyyy}^FS\n" +
-               $"^FO20,225^A0N,26,26^FDVenc: {vencimento:dd/MM/yyyy}^FS\n" +
-               $"^FO20,255^A0N,22,22^FDArmaz: {metodoArmazenagem}^FS\n" +
+               $"^FO10,35^FB300,2,0,C,0^A0N,28,28^FD{produtoNome.ToUpper()}^FS\n" +
+               $"^FO10,120^FB300,1,0,C,0^A0N,38,38^FD{precoTexto}^FS\n" +
+               $"^FO20,180^A0N,26,26^FDFab: {fabricacao:dd/MM/yyyy}^FS\n" +
+               $"^FO20,210^A0N,26,26^FDVenc: {vencimento:dd/MM/yyyy}^FS\n" +
+               $"^FO20,240^A0N,22,22^FDArmaz: {metodoArmazenagem}^FS\n" +
                "^XZ\n";
     }
 }
