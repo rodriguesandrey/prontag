@@ -396,3 +396,23 @@ table button.principal {
     border-color: #FF3B9A !important;
     color: #14181F !important;
 }
+
+/* ===== Ajustes para celular (telas até 640px) ===== */
+@media (max-width: 640px) {
+    .app-container { padding: 12px 14px 32px; }
+
+    .nav-superior { margin-bottom: 12px; }
+    .marca-icone { width: 34px; height: 34px; font-size: 1.05rem; }
+    .marca-texto { font-size: 1.15rem; }
+
+    .hero { padding: 12px 0 4px; }
+    .hero h1 { font-size: 1.4rem; margin: 6px 0; }
+    .hero p { font-size: 0.85rem; }
+    .selo { font-size: 0.6rem; padding: 3px 9px; margin-bottom: 8px; }
+
+    .grade-cartoes { gap: 10px; margin-top: 4px; }
+    .cartao { padding: 12px 14px; gap: 4px; }
+    .cartao-icone { width: 30px; height: 30px; font-size: 0.95rem; margin-bottom: 2px; }
+    .cartao h4 { font-size: 0.95rem; }
+    .cartao p { font-size: 0.78rem; }
+}
