@@ -15,7 +15,7 @@ public static class ProdutoEndpoints
     var query = db.Produtos.Where(p => p.Ativo);
     if (contexto == "produtos") query = query.Where(p => p.UsadoEmProdutos);
     else if (contexto == "expositor") query = query.Where(p => p.UsadoEmExpositor);
-    return await query.ToListAsync();
+        return await query.OrderBy(p => p.Nome).ToListAsync();
 });
 
         grupo.MapPost("/", async (Produto produto, Guid? funcionarioId, ITenantProvider tenant, ProntagDbContext db) =>
