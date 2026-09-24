@@ -11,30 +11,17 @@ public static class ProdutoEndpoints
         var grupo = app.MapGroup("/produtos");
 
         grupo.MapGet("/", async (string? contexto, ProntagDbContext db) =>
-{
-    var query = db.Produtos.Where(p => p.Ativo);
-    if (contexto == "produtos") query = query.Where(p => p.UsadoEmProdutos);
-    else if (contexto == "expositor") query = query.Where(p => p.UsadoEmExpositor);
-        return await query.OrderBy(p => p.Nome).ToListAsync();
-});
+        {
+            var query = db.Produtos.Where(p => p.Ativo);
+            if (contexto == "produtos") query = query.Where(p => p.UsadoEmProdutos);
+            else if (contexto == "expositor") query = query.Where(p => p.UsadoEmExpositor);
+            return await query.OrderBy(p => p.Nome).ToListAsync();
+        });
 
         grupo.MapPost("/", async (Produto produto, Guid? funcionarioId, ITenantProvider tenant, ProntagDbContext db) =>
         {
             produto.TenantId = tenant.TenantId;
             db.Produtos.Add(produto);
-
-            if (funcionarioId.HasValue)
-            {
-                db.AuditoriasAlteracao.Add(new AuditoriaAlteracao
-                {
-                    TenantId = tenant.TenantId,
-                    Entidade = "Produto",
-                    Acao = "Criar",
-                    EntidadeId = produto.Id,
-                    FuncionarioId = funcionarioId.Value
-                });
-            }
-
             await db.SaveChangesAsync();
             return Results.Created($"/produtos/{produto.Id}", produto);
         });
@@ -52,18 +39,7 @@ public static class ProdutoEndpoints
             produto.UsadoEmExpositor = atualizacao.UsadoEmExpositor;
             produto.Unidade = atualizacao.Unidade;
             produto.MetodoArmazenagem = atualizacao.MetodoArmazenagem;
-
-            if (funcionarioId.HasValue)
-            {
-                db.AuditoriasAlteracao.Add(new AuditoriaAlteracao
-                {
-                    TenantId = tenant.TenantId,
-                    Entidade = "Produto",
-                    Acao = "Editar",
-                    EntidadeId = produto.Id,
-                    FuncionarioId = funcionarioId.Value
-                });
-            }
+            produto.Grupo = atualizacao.Grupo;
 
             await db.SaveChangesAsync();
             return Results.Ok(produto);
@@ -73,21 +49,7 @@ public static class ProdutoEndpoints
         {
             var produto = await db.Produtos.FindAsync(id);
             if (produto is null) return Results.NotFound();
-
             produto.Ativo = false;
-
-            if (funcionarioId.HasValue)
-            {
-                db.AuditoriasAlteracao.Add(new AuditoriaAlteracao
-                {
-                    TenantId = tenant.TenantId,
-                    Entidade = "Produto",
-                    Acao = "Remover",
-                    EntidadeId = produto.Id,
-                    FuncionarioId = funcionarioId.Value
-                });
-            }
-
             await db.SaveChangesAsync();
             return Results.NoContent();
         });

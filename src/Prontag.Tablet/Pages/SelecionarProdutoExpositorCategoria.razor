@@ -1,0 +1,40 @@
+@page "/expositor/categoria/{Categoria}"
+@inject HttpClient Http
+@inject NavigationManager Nav
+@using Prontag.Domain
+
+<a class="voltar-botao" href="/expositor">← Voltar</a>
+
+<div class="pagina-cabecalho">
+    <h3>@Categoria</h3>
+    <p>Escolha o item.</p>
+</div>
+
+@if (produtos is null)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    @foreach (var produto in produtos)
+    {
+        <button class="botao-grande" @onclick="() => Selecionar(produto)">@produto.Nome</button>
+    }
+}
+
+@code {
+    [Parameter] public string Categoria { get; set; } = "";
+
+    private List<Produto>? produtos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var todos = await Http.GetFromJsonAsync<List<Produto>>("produtos?contexto=expositor");
+        produtos = todos?.Where(p => p.Grupo == Categoria).ToList();
+    }
+
+    private void Selecionar(Produto produto)
+    {
+        Nav.NavigateTo($"/confirmar-expositor/{produto.Id}");
+    }
+}

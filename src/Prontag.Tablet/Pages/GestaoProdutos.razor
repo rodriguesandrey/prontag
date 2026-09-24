@@ -7,7 +7,7 @@
 
 <div class="pagina-cabecalho">
     <h3>Etiquetas produtos</h3>
-    <p>Produtos de uso interno — nome, validade e armazenagem.</p>
+    <p>Produtos de uso interno — nome, validade, armazenagem e categoria.</p>
 </div>
 
 <div class="secao">
@@ -16,7 +16,16 @@
         <div class="campo"><label>Nome</label><input @bind="nome" /></div>
         <div class="campo"><label>Dias de validade</label><input type="number" @bind="diasValidade" /></div>
         <div class="campo">
-            <label>Método de armazenagem</label>
+            <label>Categoria</label>
+            <select @bind="grupo">
+                @foreach (var c in Categorias.Todas)
+                {
+                    <option value="@c">@c</option>
+                }
+            </select>
+        </div>
+        <div class="campo">
+            <label>Armazenagem</label>
             <select @bind="metodoArmazenagemAtual">
                 <option value="Temp. Ambiente">Temp. Ambiente</option>
                 <option value="Geladeira">Geladeira</option>
@@ -46,17 +55,18 @@
     else
     {
         <table>
-            <thead><tr><th>Nome</th><th>Dias</th><th>Armazenagem</th><th></th></tr></thead>
+            <thead><tr><th>Nome</th><th>Categoria</th><th>Dias</th><th>Armazenagem</th><th></th></tr></thead>
             <tbody>
                 @foreach (var p in produtos)
                 {
                     <tr>
                         <td>@p.Nome</td>
+                        <td>@(string.IsNullOrEmpty(p.Grupo) ? "—" : p.Grupo)</td>
                         <td>@p.DiasValidade</td>
                         <td>@p.MetodoArmazenagem</td>
                         <td>
                             <button @onclick="() => EditarClique(p)">Editar</button>
-                            <button @onclick="() => RemoverClique(p)">Remover</button>
+                            <button @onclick="() => RemoverClique(p)">Deletar</button>
                         </td>
                     </tr>
                 }
@@ -75,6 +85,7 @@
     private bool usadoEmExpositorAtual;
     private string unidadeAtual = "kg";
     private string metodoArmazenagemAtual = "Temp. Ambiente";
+    private string grupo = Categorias.Todas[0];
     private bool salvando;
     private string? mensagem;
 
@@ -95,6 +106,7 @@
         usadoEmExpositorAtual = produto.UsadoEmExpositor;
         unidadeAtual = produto.Unidade;
         metodoArmazenagemAtual = produto.MetodoArmazenagem;
+        grupo = string.IsNullOrEmpty(produto.Grupo) ? Categorias.Todas[0] : produto.Grupo;
         mensagem = null;
     }
 
@@ -108,6 +120,7 @@
         usadoEmExpositorAtual = false;
         unidadeAtual = "kg";
         metodoArmazenagemAtual = "Temp. Ambiente";
+        grupo = Categorias.Todas[0];
     }
 
     private async Task Salvar()
@@ -128,7 +141,8 @@
             UsadoEmProdutos = true,
             UsadoEmExpositor = usadoEmExpositorAtual,
             Unidade = unidadeAtual,
-            MetodoArmazenagem = metodoArmazenagemAtual
+            MetodoArmazenagem = metodoArmazenagemAtual,
+            Grupo = grupo
         };
 
         HttpResponseMessage response = editandoId is null
@@ -152,6 +166,6 @@
     {
         var response = await Http.DeleteAsync($"produtos/{produto.Id}");
         if (response.IsSuccessStatusCode) await CarregarProdutos();
-        else mensagem = "Erro ao remover produto.";
+        else mensagem = "Erro ao deletar produto.";
     }
 }

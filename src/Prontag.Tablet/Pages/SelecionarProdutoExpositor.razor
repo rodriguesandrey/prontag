@@ -3,8 +3,12 @@
 @inject NavigationManager Nav
 @using Prontag.Domain
 
-<a href="/">&lt; Voltar</a>
-<h3>Qual produto? (Expositor)</h3>
+<a class="voltar-botao" href="/">← Voltar</a>
+
+<div class="pagina-cabecalho">
+    <h3>Etiquetas do expositor</h3>
+    <p>Escolha a categoria.</p>
+</div>
 
 @if (produtos is null)
 {
@@ -12,12 +16,16 @@
 }
 else
 {
-    @foreach (var produto in produtos)
-    {
-        <button @onclick="() => Selecionar(produto)">
-            @produto.Nome
-        </button>
-    }
+    <div class="grade-cartoes">
+        @foreach (var cat in CategoriasComItens())
+        {
+            <div class="cartao cartao-b" @onclick="() => AbrirCategoria(cat)">
+                <div class="cartao-icone icone-b">🛒</div>
+                <h4>@cat</h4>
+                <p>@ContarItens(cat) item(ns)</p>
+            </div>
+        }
+    </div>
 }
 
 @code {
@@ -25,10 +33,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos?contexto=expositor");    }
+        produtos = await Http.GetFromJsonAsync<List<Produto>>("produtos?contexto=expositor");
+    }
 
-    private void Selecionar(Produto produto)
+    private IEnumerable<string> CategoriasComItens()
     {
-        Nav.NavigateTo($"/confirmar-expositor/{produto.Id}");
+        return Categorias.Todas.Where(c => produtos!.Any(p => p.Grupo == c));
+    }
+
+    private int ContarItens(string cat) => produtos!.Count(p => p.Grupo == cat);
+
+    private void AbrirCategoria(string cat)
+    {
+        Nav.NavigateTo($"/expositor/categoria/{Uri.EscapeDataString(cat)}");
     }
 }
