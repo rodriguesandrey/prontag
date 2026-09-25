@@ -18,7 +18,7 @@
         <div class="campo">
             <label>Categoria</label>
             <select @bind="grupo">
-                @foreach (var c in Categorias.Expositor)
+                @foreach (var c in Categorias.Produtos)
                 {
                     <option value="@c">@c</option>
                 }
@@ -120,7 +120,7 @@
         usadoEmExpositorAtual = false;
         unidadeAtual = "kg";
         metodoArmazenagemAtual = "Temp. Ambiente";
-        grupo = Categorias.Expositor[0];
+        grupo = Categorias.Produtos[0];
     }
 
     private async Task Salvar()

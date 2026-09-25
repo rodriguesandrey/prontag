@@ -38,7 +38,7 @@ else
 
     private IEnumerable<string> CategoriasComItens()
     {
-        return Categorias.Expositor.Where(c => produtos!.Any(p => p.Grupo == c));
+        return Categorias.Produtos.Where(c => produtos!.Any(p => p.Grupo == c));
     }
 
     private int ContarItens(string cat) => produtos!.Count(p => p.Grupo == cat);
