@@ -17,6 +17,10 @@ public static class Categorias
         "Fermentos e químicos",
         "Recheios e coberturas",
         "Laticínios",
-        "Diversos"
+        "Frutas",
+        "Legumes e verduras",
+        "Carnes e embutidos",
+        "Bebidas",
+        "Doces e geleias",
     };
 }
