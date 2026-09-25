@@ -15,7 +15,7 @@ public static class Categorias
     {
         "Farinhas, Açúcar e Grãos",
         "Fermentos e Químicos",
-        "Recheios e Coberturas",
+        "Recheios, Bolos e Coberturas",
         "Laticínios",
         "Legumes, Frutas e Verduras",
         "Carnes e embutidos",
