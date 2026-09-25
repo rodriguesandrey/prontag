@@ -17,7 +17,7 @@
         <div class="campo">
             <label>Categoria</label>
             <select @bind="grupo">
-                @foreach (var c in Categorias.Todas)
+                @foreach (var c in Categorias.Expositor)
                 {
                     <option value="@c">@c</option>
                 }
@@ -93,7 +93,7 @@
     private decimal? preco;
     private string unidade = "kg";
     private string metodoArmazenagem = "Temp. Ambiente";
-    private string grupo = Categorias.Todas[0];
+    private string grupo = Categorias.Expositor[0];
     private string? iconeAtual;
     private bool salvando;
     private string? mensagem;
@@ -113,7 +113,7 @@
         preco = p.Preco;
         unidade = p.Unidade;
         metodoArmazenagem = p.MetodoArmazenagem;
-        grupo = string.IsNullOrEmpty(p.Grupo) ? Categorias.Todas[0] : p.Grupo;
+        grupo = string.IsNullOrEmpty(p.Grupo) ? Categorias.Expositor[0] : p.Grupo;
         iconeAtual = p.Icone;
         mensagem = null;
     }
@@ -126,7 +126,7 @@
         preco = null;
         unidade = "kg";
         metodoArmazenagem = "Temp. Ambiente";
-        grupo = Categorias.Todas[0];
+        grupo = Categorias.Expositor[0];
         iconeAtual = null;
     }
 
