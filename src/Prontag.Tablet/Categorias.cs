@@ -13,12 +13,11 @@ public static class Categorias
 
     public static readonly string[] Produtos = new[]
     {
-        "Farinhas e grãos",
-        "Fermentos e químicos",
-        "Recheios e coberturas",
+        "Farinhas, Açúcar e Grãos",
+        "Fermentos e Químicos",
+        "Recheios e Coberturas",
         "Laticínios",
-        "Frutas",
-        "Legumes e verduras",
+        "Legumes, Frutas e Verduras",
         "Carnes e embutidos",
         "Bebidas",
         "Doces e geleias",
