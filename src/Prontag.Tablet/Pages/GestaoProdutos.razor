@@ -85,7 +85,7 @@
     private bool usadoEmExpositorAtual;
     private string unidadeAtual = "kg";
     private string metodoArmazenagemAtual = "Temp. Ambiente";
-    private string grupo = Categorias.Expositor[0];
+    private string grupo = Categorias.Produtos[0];
     private bool salvando;
     private string? mensagem;
 
@@ -106,7 +106,7 @@
         usadoEmExpositorAtual = produto.UsadoEmExpositor;
         unidadeAtual = produto.Unidade;
         metodoArmazenagemAtual = produto.MetodoArmazenagem;
-        grupo = string.IsNullOrEmpty(produto.Grupo) ? Categorias.Expositor[0] : produto.Grupo;
+        grupo = string.IsNullOrEmpty(produto.Grupo) ? Categorias.Produtos[0] : produto.Grupo;
         mensagem = null;
     }
 
