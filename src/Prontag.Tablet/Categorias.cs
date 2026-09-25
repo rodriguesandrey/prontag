@@ -7,6 +7,7 @@ public static class Categorias
         "Salgados",
         "Quitandas de queijo",
         "Quitandas doces",
-        "Confeitaria"
+        "Confeitaria",
+        "Sequilhos"
     };
 }
