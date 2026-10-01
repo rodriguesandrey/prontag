@@ -29,4 +29,4 @@ public static class Categorias
     .OrderBy(x => x)
     .ToArray();
 }
-}
+
