@@ -8,8 +8,11 @@ public static class Categorias
         "Quitandas de queijo",
         "Quitandas doces",
         "Confeitaria",
-        "Sequilhos"
-    };
+        "Sequilhos",
+        "Bolos",
+    }
+    .OrderBy(x => x)
+    .ToArray();
 
     public static readonly string[] Produtos = new[]
     {
@@ -21,5 +24,9 @@ public static class Categorias
         "Carnes e embutidos",
         "Bebidas",
         "Doces e geleias",
-    };
+        "Materiais e Insumos de Produção",
+    }
+    .OrderBy(x => x)
+    .ToArray();
+}
 }
